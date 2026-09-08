@@ -1,0 +1,959 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/><meta name="apple-mobile-web-app-capable" content="yes"/><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/><meta name="apple-mobile-web-app-title" content="Study Planner"/><meta name="theme-color" content="#0b0f19"/><title>Study Planner</title><style>:root{--bg:#0b0f19;--bg2:#131b2e;--bg3:#1d2840;--border:#263554;--border2:#33456e;--accent:#38bdf8;--accent2:#7dd3fc;--text:#f8fafc;--text2:#cbd5e1;--text3:#94a3b8;--danger:#f43f5e;--success:#34d399;--gold:#fbbf24;--linked:#818cf8;}*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}body{background:var(--bg);color:var(--text);font-family:'Inter','Segoe UI',system-ui,sans-serif;min-height:100vh;overflow-x:hidden;}button{cursor:pointer;font-family:inherit;}input,textarea,select{font-family:inherit;}
+/* SPLASH */#splash{position:fixed;inset:0;z-index:9999;background:#0b0f19;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity 0.6s ease;overflow:hidden;}#splash.fade-out{opacity:0;pointer-events:none;}.orb{position:absolute;border-radius:50%;filter:blur(80px);opacity:0.15;animation:orbf 5s ease-in-out infinite alternate;}.orb1{width:280px;height:280px;background:#0284c7;top:-80px;left:-80px;}.orb2{width:220px;height:220px;background:#6366f1;bottom:-60px;right:-60px;animation-delay:1.5s;}@keyframes orbf{from{transform:scale(1);}to{transform:scale(1.15) translate(15px,15px);}}.splash-icon{margin-bottom:24px;}.splash-title{font-size:36px;font-weight:900;color:#f8fafc;letter-spacing:-1px;}.splash-title span{color:#7dd3fc;}.splash-by{font-size:14px;color:#94a3b8;letter-spacing:1px;margin-top:6px;}.splash-bar-wrap{margin-top:40px;width:140px;height:3px;background:rgba(56,189,248,0.18);border-radius:3px;overflow:hidden;}.splash-bar{height:100%;width:0;background:linear-gradient(90deg,#0284c7,#7dd3fc);border-radius:3px;animation:fillb 1.8s ease forwards;}@keyframes fillb{from{width:0;}to{width:100%;}}
+/* HEADER */.header{background:var(--bg2);border-bottom:1px solid var(--border);padding:calc(14px + env(safe-area-inset-top)) 18px 12px;position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;}.header-logo{font-size:20px;font-weight:900;background:linear-gradient(120deg,var(--accent2),#bae6fd);-webkit-background-clip:text;background-clip:text;color:transparent;letter-spacing:-0.5px;}.header-by{font-size:13px;color:var(--text3);margin-left:6px;}.header-sub{font-size:13px;color:var(--text2);margin-top:1px;}.add-btn{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#0284c7,#38bdf8);border:none;color:#0b0f19;font-size:22px;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 12px rgba(56,189,248,0.25);flex-shrink:0;}
+/* BOTTOM NAV */.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:var(--bg2);border-top:1px solid var(--border);display:flex;padding-bottom:env(safe-area-inset-bottom);z-index:50;}.nav-item{position:relative;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 4px 8px;background:none;border:none;color:var(--text3);font-size:12px;font-weight:600;gap:4px;letter-spacing:0.3px;}.nav-item.active{color:var(--accent2);}.nav-icon{font-size:19px;}
+/* CONTENT */.page{padding:0 16px 100px;max-width:560px;margin:0 auto;}.card{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:16px 18px;margin-top:14px;}.card-title{font-size:13px;font-weight:700;color:var(--text2);letter-spacing:0.8px;text-transform:uppercase;margin-bottom:12px;}.sec-row{display:flex;justify-content:space-between;align-items:center;margin:18px 0 10px;}.sec-title{font-size:15px;font-weight:700;color:var(--text);}.empty{text-align:center;color:var(--text3);font-size:14px;padding:24px 0;}.greeting{font-size:14px;color:var(--text2);margin:0 0 2px;}
+/* COUNTDOWN */.countdown-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px;}.cd-card{background:var(--bg2);border:1px solid var(--border2);border-radius:14px;padding:16px 14px;text-align:center;cursor:pointer;}.cd-card.boards{border-color:#0284c7;background:rgba(2,132,199,0.08);}.cd-card.ca{border-color:var(--gold);background:rgba(251,191,36,0.08);}.cd-days{font-size:36px;font-weight:900;line-height:1;color:var(--accent2);}.cd-label{font-size:13px;color:var(--text2);margin-top:4px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;}.cd-date{font-size:13px;color:var(--text3);margin-top:3px;}
+/* TASKS */.task-card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:14px 16px;margin-top:10px;}.task-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}.task-label{font-size:14px;font-weight:700;color:var(--text2);}.task-progress{font-size:13px;color:var(--text3);font-weight:600;}.task-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border);}.task-row:last-child{border-bottom:none;}.task-check{width:22px;height:22px;border-radius:6px;flex-shrink:0;border:2px solid var(--border2);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s;}.task-check.done{background:var(--accent);border-color:var(--accent);}.task-text{flex:1;font-size:15px;color:var(--text);cursor:pointer;}.task-text.done{color:var(--text3);text-decoration:line-through;}.task-del{background:none;border:none;color:var(--text3);font-size:16px;padding:0 4px;cursor:pointer;}.add-task-row{display:flex;gap:8px;margin-top:10px;}.add-task-row input{flex:1;min-width:0;}.task-prog-wrap{height:3px;background:var(--bg3);border-radius:3px;overflow:hidden;margin-bottom:10px;}.task-prog-fill{height:100%;background:linear-gradient(90deg,#0284c7,#7dd3fc);border-radius:3px;transition:width 0.4s ease;}
+/* SEGREGATION & 3-TICK PORTIONS */.seg-tabs{display:flex;gap:8px;background:var(--bg3);padding:4px;border-radius:12px;margin:14px 0 6px;}.seg-btn{flex:1;border:none;background:none;color:var(--text3);font-weight:700;font-size:14px;padding:9px;border-radius:8px;transition:all 0.2s;}.seg-btn.active{background:var(--accent);color:#0b0f19;}.portion-sub-block{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:16px;margin-top:12px;}.portion-sub-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}.portion-sub-name{font-size:15px;font-weight:800;color:var(--text);}.portion-sub-pct{font-size:13px;font-weight:800;color:var(--accent2);}.prog-bar-wrap{background:var(--bg3);border-radius:6px;height:5px;overflow:hidden;margin-bottom:12px;}.prog-bar{height:100%;background:linear-gradient(90deg,#0284c7,#7dd3fc);border-radius:6px;transition:width 0.4s;}.topic-item{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:9px 10px;background:var(--bg3);border-radius:10px;margin-bottom:6px;border:1px solid var(--border);}.topic-title{flex:1;font-size:13px;font-weight:500;color:var(--text);line-height:1.4;word-break:break-word;}.topic-tools{display:flex;align-items:center;gap:6px;}.btn-icon-action{background:var(--bg2);border:1px solid var(--border2);color:var(--accent2);border-radius:6px;padding:5px 7px;font-size:12px;cursor:pointer;line-height:1;}.btn-icon-action:hover{border-color:var(--accent);}.tick-cluster{display:flex;gap:6px;align-items:center;margin-left:4px;}.tick-box{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:9px;font-weight:700;color:var(--text3);cursor:pointer;user-select:none;}.tick-square{width:22px;height:22px;border-radius:6px;border:2px solid var(--border2);background:var(--bg2);display:flex;align-items:center;justify-content:center;transition:all 0.15s;}.tick-square.ticked{background:var(--accent);border-color:var(--accent);color:#0b0f19;font-weight:900;font-size:12px;}
+/* NOTES & CAMERA DRAWER */.notes-thumb-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:8px;margin-top:10px;}.note-thumb-wrap{position:relative;width:100%;aspect-ratio:1;border-radius:8px;overflow:hidden;border:1px solid var(--border2);background:var(--bg3);}.note-thumb-img{width:100%;height:100%;object-fit:cover;cursor:pointer;}.note-thumb-del{position:absolute;top:2px;right:2px;background:rgba(11,15,25,0.85);color:var(--danger);border:none;border-radius:4px;width:18px;height:18px;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+/* CELEBRATION & MODAL */#celebOverlay{position:fixed;inset:0;z-index:9998;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);}#celebOverlay.show{display:flex;}.celeb-box{background:var(--bg2);border:1px solid var(--accent);border-radius:24px;padding:32px 24px;max-width:300px;width:90%;text-align:center;position:relative;}.celeb-emoji{font-size:52px;display:block;margin-bottom:12px;}.celeb-phrase{font-size:17px;font-weight:800;color:var(--text);margin-bottom:6px;}.celeb-sub{font-size:13px;color:var(--text2);margin-bottom:20px;}.celeb-close{background:linear-gradient(135deg,#0284c7,#38bdf8);border:none;border-radius:10px;color:#0b0f19;font-size:14px;font-weight:800;padding:10px 28px;cursor:pointer;}
+/* INPUTS & BUTTONS */.input{width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:10px;padding:11px 14px;color:var(--text);font-size:14px;outline:none;}.input:focus{border-color:var(--accent);}.textarea{resize:vertical;min-height:90px;line-height:1.5;}.btn-primary{background:linear-gradient(135deg,#0284c7,#38bdf8);border:none;border-radius:10px;color:#0b0f19;font-size:14px;font-weight:700;padding:11px;width:100%;}.btn-secondary{background:var(--bg3);border:1px solid var(--border2);border-radius:10px;color:var(--text2);font-size:14px;font-weight:600;padding:11px;width:100%;}.btn-sm{background:var(--accent);border:none;border-radius:8px;color:#0b0f19;font-size:14px;font-weight:700;padding:7px 14px;}.btn-outline-sm{background:none;border:1px solid var(--border2);border-radius:8px;color:var(--text2);font-size:13px;font-weight:600;padding:6px 12px;}.btn-row{display:flex;gap:10px;margin-top:14px;}.btn-row>*{flex:1;}.timer-btn-row{display:flex;gap:8px;margin-top:12px;}.timer-btn-row>*{flex:1;}.btn-pause{background:var(--bg3);border:1px solid var(--border2);border-radius:10px;color:var(--accent2);font-size:14px;font-weight:700;padding:11px;}.btn-stop{background:linear-gradient(135deg,#e11d48,#f43f5e);border:none;border-radius:10px;color:#fff;font-size:14px;font-weight:700;padding:11px;}
+/* MODAL */.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:200;align-items:flex-end;justify-content:center;padding:16px;}.modal-overlay.open{display:flex;}.modal{background:var(--bg2);border:1px solid var(--border2);border-radius:20px;padding:22px 18px;width:100%;max-width:500px;margin-bottom:env(safe-area-inset-bottom);max-height:85vh;overflow-y:auto;}.modal h3{font-size:16px;font-weight:700;color:var(--accent2);margin-bottom:14px;}.field-gap{margin-bottom:12px;}.field-label{font-size:13px;color:var(--text2);font-weight:600;margin-bottom:6px;}</style></head><body>
+
+<div id="splash"><div class="orb orb1"></div><div class="orb orb2"></div><svg class="splash-icon" width="80" height="80" viewBox="0 0 90 90"><defs><linearGradient id="sg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#38bdf8"/><stop offset="100%" stop-color="#0284c7"/></linearGradient></defs><circle cx="45" cy="45" r="45" fill="url(#sg)"/><text x="45" y="63" text-anchor="middle" font-family="Georgia,serif" font-size="56" font-weight="700" fill="#0b0f19">S</text></svg><div class="splash-title">study<span>planner</span></div><div class="splash-by">— by gandhi</div><div class="splash-bar-wrap"><div class="splash-bar"></div></div></div>
+
+<div id="celebOverlay"><div class="celeb-box"><span class="celeb-emoji" id="celebEmoji">🔥</span><div class="celeb-phrase" id="celebPhrase"></div><div class="celeb-sub" id="celebSub"></div><button class="celeb-close" onclick="closeCaleb()">Got it</button></div></div>
+
+<div id="app" style="display:none;">
+  <div class="header">
+    <div>
+      <div style="display:flex;align-items:baseline;gap:4px;">
+        <span class="header-logo">Study Planner</span>
+        <span class="header-by">— by gandhi</span>
+      </div>
+      <div class="header-sub" id="headerSub">Overview</div>
+    </div>
+    <button class="add-btn" id="addBtn" onclick="openModal('addBacklogModal')">+</button>
+  </div>
+
+  <div id="tabOverview" class="page" style="padding-top:14px;"></div>
+  <div id="tabPortions" style="display:none;" class="page" style="padding-top:14px;"></div>
+  <div id="tabBacklog" style="display:none;" class="page" style="padding-top:14px;"></div>
+  <div id="tabTests" style="display:none;" class="page" style="padding-top:14px;"></div>
+  <div id="tabStats" style="display:none;" class="page" style="padding-top:14px;"></div>
+
+  <div class="bottom-nav">
+    <button class="nav-item active" id="navOv" onclick="switchTab('overview')"><span class="nav-icon">📊</span>Overview</button>
+    <button class="nav-item" id="navPo" onclick="switchTab('portions')"><span class="nav-icon">📋</span>Portions</button>
+    <button class="nav-item" id="navBl" onclick="switchTab('backlog')"><span class="nav-icon">🗂️</span>Backlog</button>
+    <button class="nav-item" id="navTe" onclick="switchTab('tests')"><span class="nav-icon">📝</span>Tests</button>
+    <button class="nav-item" id="navSt" onclick="switchTab('stats')"><span class="nav-icon">📈</span>Stats</button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="nicknameModal"><div class="modal"><h3>Welcome 👋</h3><div style="font-size:14px;color:var(--text2);margin-bottom:12px;">What should I call you?</div><div class="field-gap"><input class="input" id="nicknameInput" placeholder="e.g. Gandhi" onkeydown="if(event.key==='Enter')saveNickname()"/></div><button class="btn-primary" onclick="saveNickname()">Continue</button></div></div>
+
+<div class="modal-overlay" id="cdModal"><div class="modal"><h3>Set Target Exam Dates</h3><div class="field-gap"><div class="field-label">12th Boards Date</div><input class="input" type="date" id="cdBInput"/></div><div class="field-gap"><div class="field-label">CAFC Exam Date</div><input class="input" type="date" id="cdCInput"/></div><div class="btn-row"><button class="btn-secondary" onclick="closeModal('cdModal')">Cancel</button><button class="btn-primary" onclick="saveCDs()">Save</button></div></div></div>
+
+<div class="modal-overlay" id="addBacklogModal"><div class="modal"><h3>Add Task / Backlog</h3><div class="field-gap"><div class="field-label">Task Name</div><input class="input" id="newBacklogName" placeholder="e.g. Solve Accounts final accounts sum" onkeydown="if(event.key==='Enter')saveBacklog()"/></div><div class="field-gap"><div class="field-label">Target Date (optional)</div><input class="input" type="date" id="newBacklogDue"/></div><div class="btn-row"><button class="btn-secondary" onclick="closeModal('addBacklogModal')">Cancel</button><button class="btn-primary" onclick="saveBacklog()">Add</button></div></div></div>
+
+<div class="modal-overlay" id="addTestModal"><div class="modal"><h3>Add Test</h3><div class="field-gap"><div class="field-label">Test Name</div><input class="input" id="testName" placeholder="e.g. CAFC Law Contract Act Mock"/></div><div class="field-gap"><div class="field-label">Test Date</div><input class="input" type="date" id="testDate"/></div><div class="btn-row"><button class="btn-secondary" onclick="closeModal('addTestModal')">Cancel</button><button class="btn-primary" onclick="saveTest()">Save Test</button></div></div></div>
+
+<!-- CHAPTER NOTES & CAMERA MODAL -->
+<div class="modal-overlay" id="chapterNotesModal">
+  <div class="modal">
+    <h3 id="modalTopicHeader">Chapter Notes & Camera</h3>
+    <div class="field-gap">
+      <div class="field-label">Written Notes / Quick Revision Points</div>
+      <textarea class="input textarea" id="chapterNoteText" placeholder="Jot down formulas, adjustment entries, section numbers, shortcuts..."></textarea>
+    </div>
+    <div class="field-gap">
+      <div class="field-label">Attached Photos & Snaps</div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn-secondary" onclick="document.getElementById('cameraInput').click()">📷 Take Photo / Open Camera</button>
+        <button class="btn-secondary" onclick="document.getElementById('galleryInput').click()">🖼️ Upload Snap</button>
+      </div>
+      <input type="file" id="cameraInput" accept="image/*" capture="environment" style="display:none;" onchange="handleImageCapture(event)"/>
+      <input type="file" id="galleryInput" accept="image/*" style="display:none;" onchange="handleImageCapture(event)"/>
+      <div class="notes-thumb-grid" id="modalNotesGallery"></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn-secondary" onclick="closeModal('chapterNotesModal')">Close</button>
+      <button class="btn-primary" onclick="saveChapterNotes()">Save Notes</button>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT / CUSTOMIZE PORTION TOPIC MODAL -->
+<div class="modal-overlay" id="editTopicModal">
+  <div class="modal">
+    <h3>Edit Chapter / Portion Item</h3>
+    <div class="field-gap">
+      <div class="field-label">Chapter / Topic Title</div>
+      <input class="input" id="editTopicTitleInput" placeholder="Chapter title"/>
+    </div>
+    <div class="btn-row">
+      <button class="btn-secondary" onclick="closeModal('editTopicModal')">Cancel</button>
+      <button class="btn-primary" onclick="saveEditedTopicTitle()">Save Update</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const PHRASES=[  {e:"🫡",p:"yeah that one's done.",s:"moving on."},  {e:"😮‍💨",p:"okay fine, good job.",s:"don't let it go to your head."},  {e:"🙂",p:"not bad.",s:"could be worse."},  {e:"😑",p:"took you long enough.",s:"but okay."},  {e:"🤙",p:"cool.",s:"next."},  {e:"💀",p:"actually did it.",s:"respect ig."},  {e:"🫠",p:"one down.",s:"many more to go unfortunately."},  {e:"🧢",p:"checked off.",s:"onto the next thing."},  {e:"😐",p:"noted.",s:""},  {e:"🎯",p:"hit it.",s:"no celebration needed."},  {e:"🔥",p:"still burning.",s:"barely."}];
+
+const initialPortions = {
+  boards_12th: {
+    title: "12th Boards (MSBSHSE Commerce)",
+    subjects: [
+      {
+        name: "Book-Keeping & Accountancy",
+        topics: [
+          "Ch 1: Introduction to Partnership and Partnership Final Accounts",
+          "Ch 2: Accounts of 'Not for Profit' Concerns",
+          "Ch 3: Reconstitution of Partnership (Admission of Partner)",
+          "Ch 4: Reconstitution of Partnership (Retirement of Partner)",
+          "Ch 5: Reconstitution of Partnership (Death of Partner)",
+          "Ch 6: Dissolution of Partnership Firm",
+          "Ch 7: Bills of Exchange",
+          "Ch 8: Company Accounts - Issue of Shares",
+          "Ch 9: Analysis of Financial Statements",
+          "Ch 10: Computer in Accounting"
+        ]
+      },
+      {
+        name: "Economics",
+        topics: [
+          "Ch 1: Introduction to Micro and Macro Economics",
+          "Ch 2: Utility Analysis",
+          "Ch 3 (A): Demand Analysis",
+          "Ch 3 (B): Elasticity of Demand",
+          "Ch 4: Supply Analysis",
+          "Ch 5: Forms of Market",
+          "Ch 6: Index Numbers",
+          "Ch 7: National Income",
+          "Ch 8: Public Finance in India",
+          "Ch 9: Money Market and Capital Market in India",
+          "Ch 10: Foreign Trade of India"
+        ]
+      },
+      {
+        name: "Organisation of Commerce & Management (OCM)",
+        topics: [
+          "Ch 1: Principles of Management",
+          "Ch 2: Functions of Management",
+          "Ch 3: Entrepreneurship Development",
+          "Ch 4: Business Services",
+          "Ch 5: Emerging Modes of Business",
+          "Ch 6: Social Responsibilities of Commercial Organisations",
+          "Ch 7: Consumer Protection",
+          "Ch 8: Marketing"
+        ]
+      },
+      {
+        name: "Mathematics & Statistics",
+        topics: [
+          "Ch 1 (Part 1): Mathematical Logic",
+          "Ch 2 (Part 1): Matrices",
+          "Ch 3 (Part 1): Differentiation",
+          "Ch 4 (Part 1): Applications of Derivatives",
+          "Ch 5 (Part 1): Integration",
+          "Ch 6 (Part 1): Definite Integration",
+          "Ch 7 (Part 1): Differential Equations and Applications",
+          "Ch 8 (Part 1): Linear Programming Problems (LPP)",
+          "Ch 1 (Part 2): Commission, Brokerage and Discount",
+          "Ch 2 (Part 2): Insurance and Annuity",
+          "Ch 3 (Part 2): Linear Regression",
+          "Ch 4 (Part 2): Time Series and Bivariate Frequency",
+          "Ch 5 (Part 2): Index Numbers",
+          "Ch 6 (Part 2): Assignment Problem and Sequencing",
+          "Ch 7 (Part 2): Probability Distributions"
+        ]
+      },
+      {
+        name: "English (Yuvakbharati)",
+        topics: [
+          "1.1: An Astrologer's Day — R. K. Narayan",
+          "1.2: On Saying \"Please\" — A. G. Gardiner",
+          "1.3: The Cop and the Anthem — O. Henry",
+          "1.4: Big Data - Big Insights",
+          "1.5: The New Dress — Virginia Woolf",
+          "1.6: Into the Wild — Kiran Purandare",
+          "1.7: Why We Travel — Pico Iyer",
+          "1.8: Voyaging Towards Excellence — Achyut Godbole",
+          "2.1: Song of the Open Road — Walt Whitman",
+          "2.2: Indian Weavers — Sarojini Naidu",
+          "2.3: The Inchcape Rock — Robert Southey",
+          "2.4: Have You Earned Your Tomorrow — Edgar Guest",
+          "2.5: Father Returning Home — Dilip Chitre",
+          "2.6: Money — William H. Davies",
+          "2.7: She Walks in Beauty — Lord Byron",
+          "2.8: Small Towns and Rivers — Mamang Dai",
+          "3.1: Summary Writing",
+          "3.2: Mind-Mapping",
+          "3.3: Note-Making",
+          "3.4: Statement of Purpose (SOP)",
+          "3.5: Drafting a Virtual Message",
+          "3.6: Group Discussion",
+          "4.1: History of English Novel",
+          "4.2: To Sir, with Love — E. R. Braithwaite",
+          "4.3: Around the World in Eighty Days — Jules Verne",
+          "4.4: The Sign of Four — Sir Arthur Conan Doyle"
+        ]
+      },
+      {
+        name: "French (Rencontres ! Part - 2)",
+        topics: [
+          "Leçon 0: Bientôt les vacances ! (Revision of tenses, holiday plans)",
+          "Leçon 1: Autour de la table (French gastronomy, table etiquette)",
+          "Leçon 1 Grammar: Partitives, quantity, placement of object pronouns (COD/COI)",
+          "Leçon 2: Voyages... Voyages (Travel, transport, holiday destinations)",
+          "Leçon 2 Grammar: Pronoms adverbiaux (y & en), qui/que/où, plus-que-parfait",
+          "Bilan 1: Review of Leçons 0, 1, 2",
+          "Leçon 3: Un esprit sain dans un corps sain (Health, sports, medical advice)",
+          "Leçon 3 Grammar: Imperative with pronouns, conditionnel présent, pronoms relatifs composés",
+          "Leçon 4: Sauvons notre planète ! (Ecology, climate change, recycling)",
+          "Leçon 4 Grammar: Subjonctif présent, negation (ne...personne, rien, jamais)",
+          "Bilan 2: Review of Leçons 3, 4",
+          "Leçon 5: M comme Métiers, M comme Médias (Careers, job interviews, media)",
+          "Leçon 5 Grammar: Futur antérieur, si clauses, la voix passive",
+          "Leçon 6: Un coup d’œil sur le monde de la Francophonie (French-speaking world)",
+          "Leçon 6 Grammar: Discours indirect, possessive/demonstrative pronouns",
+          "Bilan 3: Writing Skills (Rédaction de message, courriel, lettre, essai)"
+        ]
+      }
+    ]
+  },
+  cafc: {
+    title: "CAFC (CA Foundation)",
+    subjects: [
+      {
+        name: "Paper 1: Accounting (100 Marks)",
+        topics: [
+          "Ch 1: Theoretical Framework (Scope, Concepts, Principles & Policies)",
+          "Ch 1: Capital & Revenue Expenditures, Contingent Assets & Liabilities",
+          "Ch 1: Accounting Standards (Concepts & Objectives) & Measurement Discipline",
+          "Ch 2: Accounting Process (Journals, Ledgers, Cash Book, Subsidiary Books)",
+          "Ch 2: Trial Balance & Rectification of Errors",
+          "Ch 3: Bank Reconciliation Statement (BRS)",
+          "Ch 4: Inventories (Valuation basis, Cost formulas)",
+          "Ch 5: Depreciation and Amortisation (Methods, computation, changes)",
+          "Ch 6: Bills of Exchange and Promissory Notes",
+          "Ch 7: Final Accounts of Sole Proprietors (Manufacturing & Non-Manufacturing)",
+          "Ch 8: Financial Statements of Not-for-Profit Organisations (NPO)",
+          "Ch 9: Accounts from Incomplete Records (Single Entry System)",
+          "Ch 10: Partnership and LLP Accounts (Intro, Profit Sharing & Goodwill)",
+          "Ch 10: Admission, Retirement and Death of a Partner",
+          "Ch 10: Dissolution of Partnership Firms and LLPs",
+          "Ch 11: Company Accounts (Issue, Forfeiture & Re-issue of Shares)",
+          "Ch 11: Issue & Redemption of Debentures",
+          "Ch 11: Bonus Issue, Rights Issue & Redemption of Preference Shares"
+        ]
+      },
+      {
+        name: "Paper 2: Business Laws (100 Marks)",
+        topics: [
+          "Ch 1: Indian Regulatory Framework (Structure of legal system, judiciary, legislative process)",
+          "Ch 2: The Indian Contract Act, 1872 - General Principles (Formation, Consideration, Capacity, Free Consent, Legality)",
+          "Ch 2: The Indian Contract Act, 1872 - Performance, Discharge, Breach & Remedies",
+          "Ch 2: The Indian Contract Act, 1872 - Special Contracts (Indemnity, Guarantee, Bailment, Pledge, Agency)",
+          "Ch 3: The Sale of Goods Act, 1930 - Formation of Contract of Sale",
+          "Ch 3: The Sale of Goods Act, 1930 - Conditions and Warranties",
+          "Ch 3: The Sale of Goods Act, 1930 - Transfer of Ownership & Delivery of Goods",
+          "Ch 3: The Sale of Goods Act, 1930 - Rights of Unpaid Seller",
+          "Ch 4: The Indian Partnership Act, 1932 - General Nature of Partnership",
+          "Ch 4: The Indian Partnership Act, 1932 - Relations of Partners",
+          "Ch 4: The Indian Partnership Act, 1932 - Registration and Dissolution of a Firm",
+          "Ch 5: The Limited Liability Partnership Act, 2008",
+          "Ch 6: The Companies Act, 2013 - Incorporation, Classification, MOA & AOA, Capital Structure",
+          "Ch 7: The Negotiable Instruments Act, 1881 - Promissory Notes, Bills of Exchange, Cheques, Negotiation, Crossing & Dishonour"
+        ]
+      },
+      {
+        name: "Paper 3: Quantitative Aptitude (100 Marks)",
+        topics: [
+          "Part A (Maths) Ch 1: Ratio and Proportion, Indices, Logarithms",
+          "Part A (Maths) Ch 2: Equations (Linear, Quadratic, Matrices)",
+          "Part A (Maths) Ch 3: Linear Inequalities with Objective Functions and Optimization",
+          "Part A (Maths) Ch 4: Mathematics of Finance (Simple & Compound Interest, Effective Rate, Annuity, Perpetuity, Sinking Fund, Valuation)",
+          "Part A (Maths) Ch 5: Basic Concepts of Permutations and Combinations",
+          "Part A (Maths) Ch 6: Sequence and Series (AP and GP)",
+          "Part A (Maths) Ch 7: Sets, Relations, and Functions; Basics of Limits & Continuity",
+          "Part A (Maths) Ch 8: Basic Applications of Differential and Integral Calculus in Business & Economics",
+          "Part B (LR) Ch 9: Number Series, Coding and Decoding, and Odd Man Out",
+          "Part B (LR) Ch 10: Direction Tests",
+          "Part B (LR) Ch 11: Seating Arrangements",
+          "Part B (LR) Ch 12: Blood Relations",
+          "Part C (Stats) Ch 13: Statistical Representation of Data & Sampling",
+          "Part C (Stats) Ch 14: Measures of Central Tendency and Dispersion (Mean, Median, Mode, SD, QD)",
+          "Part C (Stats) Ch 15: Probability",
+          "Part C (Stats) Ch 16: Theoretical Distributions (Binomial, Poisson, Normal)",
+          "Part C (Stats) Ch 17: Correlation and Regression",
+          "Part C (Stats) Ch 18: Index Numbers"
+        ]
+      },
+      {
+        name: "Paper 4: Business Economics (100 Marks)",
+        topics: [
+          "Ch 1: Introduction to Business Economics (Basic problems, Price mechanism)",
+          "Ch 2: Theory of Demand and Supply (Elasticity, Consumer equilibrium, Indifference curves)",
+          "Ch 3: Theory of Production and Cost (Production functions, Laws of returns, Cost concepts)",
+          "Ch 4: Price Determination in Different Markets (Perfect Competition, Monopoly, Monopolistic, Oligopoly)",
+          "Ch 5: Determination of National Income (Concepts, Measurement methods, Keynesian model)",
+          "Ch 6: Business Cycles (Phases, Causes, Indicators)",
+          "Ch 7: Public Finance (Fiscal functions, Market failure, Public debt, Union budget, Fiscal policy)",
+          "Ch 8: Money Market (Demand for money, Money supply, Monetary policy tools of RBI)",
+          "Ch 9: International Trade (Theories of trade, Tariffs, Exchange rates, Foreign capital flows)",
+          "Ch 10: Indian Economy (Pre-independence background, Post-1991 reforms, Agriculture, Industry, Services, Current initiatives)"
+        ]
+      }
+    ]
+  }
+};
+
+let data = {
+  nickname: "",
+  boardsDate: "",
+  caDate: "",
+  todayTasks: [],
+  backlog: [],
+  tests: [],
+  portionsStructure: null, // Holds editable portions
+  portionsProgress: {},    // Holds 3-tick states
+  chapterNotes: {},        // Holds text & camera snapshots per topic
+  studyLog: {},
+  timerState: "idle",
+  timerStartTs: null,
+  timerAccum: 0
+};
+
+let activeSeg = "boards_12th";
+let activeContext = { segKey: "", subIdx: 0, topicIdx: 0, topicKey: "" };
+
+function initApp() {
+  try {
+    const raw = localStorage.getItem("study_planner_app_gandhi_v9");
+    if(raw) {
+      const parsed = JSON.parse(raw);
+      data = Object.assign(data, parsed);
+    }
+  } catch(e) {}
+
+  if(!data.portionsStructure) {
+    data.portionsStructure = JSON.parse(JSON.stringify(initialPortions));
+  }
+  if(!data.chapterNotes) data.chapterNotes = {};
+  if(!data.portionsProgress) data.portionsProgress = {};
+
+  // Ensure tick records
+  Object.keys(data.portionsStructure).forEach(segKey => {
+    if(!data.portionsProgress[segKey]) data.portionsProgress[segKey] = {};
+    data.portionsStructure[segKey].subjects.forEach(sub => {
+      if(!data.portionsProgress[segKey][sub.name]) data.portionsProgress[segKey][sub.name] = {};
+      sub.topics.forEach(tName => {
+        if(!data.portionsProgress[segKey][sub.name][tName]) {
+          data.portionsProgress[segKey][sub.name][tName] = { classDone: false, selfDone: false, perfection: false };
+        }
+      });
+    });
+  });
+
+  save();
+  document.getElementById("app").style.display = "block";
+
+  setTimeout(() => {
+    const s = document.getElementById("splash");
+    if(s) {
+      s.classList.add("fade-out");
+      setTimeout(() => {
+        s.style.display = "none";
+        if(!data.nickname) openModal("nicknameModal");
+      }, 600);
+    }
+  }, 1800);
+
+  if(data.timerState === "running") startTimerTick();
+  renderOverview();
+}
+
+function save() {
+  localStorage.setItem("study_planner_app_gandhi_v9", JSON.stringify(data));
+}
+
+function saveNickname() {
+  const v = document.getElementById("nicknameInput").value.trim();
+  if(!v) return;
+  data.nickname = v;
+  save();
+  closeModal("nicknameModal");
+  renderOverview();
+}
+
+function daysUntil(d) {
+  if(!d) return null;
+  const n = new Date(); n.setHours(0,0,0,0);
+  return Math.ceil((new Date(d) - n) / 86400000);
+}
+function fmtDate(d) {
+  if(!d) return "";
+  return new Date(d).toLocaleDateString("en-IN", {day:"numeric", month:"short", year:"numeric"});
+}
+
+function celebrate(extra) {
+  const ph = PHRASES[Math.floor(Math.random() * PHRASES.length)];
+  document.getElementById("celebEmoji").textContent = ph.e;
+  document.getElementById("celebPhrase").textContent = ph.p;
+  document.getElementById("celebSub").textContent = extra || ph.s;
+  document.getElementById("celebOverlay").classList.add("show");
+}
+function closeCaleb() {
+  document.getElementById("celebOverlay").classList.remove("show");
+}
+
+function switchTab(tab) {
+  ["tabOverview","tabPortions","tabBacklog","tabTests","tabStats"].forEach(t => document.getElementById(t).style.display = "none");
+  ["navOv","navPo","navBl","navTe","navSt"].forEach(n => document.getElementById(n).className = "nav-item");
+
+  if(tab === "overview") {
+    document.getElementById("tabOverview").style.display = "block";
+    document.getElementById("navOv").className = "nav-item active";
+    document.getElementById("headerSub").textContent = "Overview";
+    renderOverview();
+  } else if(tab === "portions") {
+    document.getElementById("tabPortions").style.display = "block";
+    document.getElementById("navPo").className = "nav-item active";
+    document.getElementById("headerSub").textContent = "Portions Syllabus";
+    renderPortions();
+  } else if(tab === "backlog") {
+    document.getElementById("tabBacklog").style.display = "block";
+    document.getElementById("navBl").className = "nav-item active";
+    document.getElementById("headerSub").textContent = "Backlog & Tasks";
+    renderBacklog();
+  } else if(tab === "tests") {
+    document.getElementById("tabTests").style.display = "block";
+    document.getElementById("navTe").className = "nav-item active";
+    document.getElementById("headerSub").textContent = "Weekly Tests";
+    renderTests();
+  } else if(tab === "stats") {
+    document.getElementById("tabStats").style.display = "block";
+    document.getElementById("navSt").className = "nav-item active";
+    document.getElementById("headerSub").textContent = "Preparation Stats";
+    renderStats();
+  }
+}
+
+// OVERVIEW
+function renderOverview() {
+  const tdDone = data.todayTasks.filter(t => t.done).length;
+  const tdTotal = data.todayTasks.length;
+  const tdPct = tdTotal ? Math.round((tdDone / tdTotal) * 100) : 0;
+  const todayKey = new Date().toISOString().slice(0,10);
+  const todaySeconds = (data.studyLog && data.studyLog[todayKey]) || 0;
+
+  let totalTicksPossible = 0;
+  let totalTicksDone = 0;
+  Object.keys(data.portionsProgress).forEach(seg => {
+    Object.keys(data.portionsProgress[seg]).forEach(sub => {
+      Object.keys(data.portionsProgress[seg][sub]).forEach(top => {
+        const obj = data.portionsProgress[seg][sub][top];
+        totalTicksPossible += 3;
+        if(obj.classDone) totalTicksDone++;
+        if(obj.selfDone) totalTicksDone++;
+        if(obj.perfection) totalTicksDone++;
+      });
+    });
+  });
+  const overallPct = totalTicksPossible ? Math.round((totalTicksDone / totalTicksPossible) * 100) : 0;
+
+  document.getElementById("tabOverview").innerHTML = `
+    <div class="greeting">Hey ${data.nickname || "there"} 👋</div>
+
+    <div class="card">
+      <div class="card-title">Study Timer</div>
+      <div style="text-align:center;padding:4px 0;">
+        <div id="timerDisplay" style="font-size:38px;font-weight:900;color:var(--accent2);letter-spacing:1px;">${fmtHMS(currentTimerElapsed())}</div>
+        <div style="font-size:13px;color:var(--text2);margin-top:4px;">${data.timerState==="paused"?"Paused · ":""}Today: ${fmtHoursMins(todaySeconds)} logged</div>
+        ${data.timerState==="idle"?
+          `<button class="btn-primary" style="margin-top:14px;" onclick="startOrResumeTimer()">▶ Start Study Session</button>`:
+          `<div class="timer-btn-row">
+            ${data.timerState==="running"?`<button class="btn-pause" onclick="pauseTimer()">⏸ Pause</button>`:`<button class="btn-primary" onclick="startOrResumeTimer()">▶ Resume</button>`}
+            <button class="btn-stop" onclick="stopTimer()">⏹ Stop</button>
+          </div>`
+        }
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Syllabus Completion (12th Boards + CAFC)</div>
+      <div style="display:flex;justify-content:space-between;font-size:14px;font-weight:700;margin-bottom:6px;">
+        <span>Combined Progress</span>
+        <span style="color:var(--accent2);">${overallPct}%</span>
+      </div>
+      <div class="prog-bar-wrap"><div class="prog-bar" style="width:${overallPct}%"></div></div>
+      <div style="font-size:13px;color:var(--text3);">${totalTicksDone} of ${totalTicksPossible} milestone ticks cleared.</div>
+    </div>
+
+    <div class="countdown-grid">
+      <div class="cd-card boards" onclick="openModal('cdModal')">
+        <div class="cd-days">${daysUntil(data.boardsDate)!==null?(daysUntil(data.boardsDate)<0?"Done":daysUntil(data.boardsDate)):"—"}</div>
+        <div class="cd-label">12th Boards</div>
+        <div class="cd-date">${fmtDate(data.boardsDate)||"Tap to set date"}</div>
+      </div>
+      <div class="cd-card ca" onclick="openModal('cdModal')">
+        <div class="cd-days" style="color:var(--gold);">${daysUntil(data.caDate)!==null?(daysUntil(data.caDate)<0?"Done":daysUntil(data.caDate)):"—"}</div>
+        <div class="cd-label">CAFC Exam</div>
+        <div class="cd-date">${fmtDate(data.caDate)||"Tap to set date"}</div>
+      </div>
+    </div>
+
+    <div class="task-card">
+      <div class="task-header">
+        <span class="task-label">📌 Daily Goals</span>
+        <span class="task-progress">${tdDone}/${tdTotal}</span>
+      </div>
+      ${tdTotal>0?`<div class="task-prog-wrap"><div class="task-prog-fill" style="width:${tdPct}%"></div></div>`:""}
+      <div>
+        ${!tdTotal?`<div class="empty" style="padding:10px 0;">No tasks added for today.</div>`:
+          data.todayTasks.map((t, idx) => `
+            <div class="task-row">
+              <div class="task-check ${t.done?"done":""}" onclick="toggleTodayTask(${idx})">${t.done?"✓":""}</div>
+              <span class="task-text ${t.done?"done":""}">${t.name}</span>
+              <button class="task-del" onclick="deleteTodayTask(${idx})">×</button>
+            </div>
+          `).join("")
+        }
+      </div>
+      <div class="add-task-row">
+        <input class="input" id="newTodayTaskInput" placeholder="Add a daily study task..." onkeydown="if(event.key==='Enter')addTodayTask()"/>
+        <button class="btn-sm" onclick="addTodayTask()">+</button>
+      </div>
+    </div>
+  `;
+}
+
+// PORTIONS (WITH EDIT TOPIC + SEPARATE CAMERA & NOTES FEATURE)
+function renderPortions() {
+  const container = document.getElementById("tabPortions");
+  const segData = data.portionsStructure[activeSeg];
+
+  let html = `
+    <div class="seg-tabs">
+      <button class="seg-btn ${activeSeg==='boards_12th'?'active':''}" onclick="setSeg('boards_12th')">12th Boards</button>
+      <button class="seg-btn ${activeSeg==='cafc'?'active':''}" onclick="setSeg('cafc')">CAFC</button>
+    </div>
+  `;
+
+  segData.subjects.forEach((sub, subIdx) => {
+    let subTicksMax = sub.topics.length * 3;
+    let subTicksDone = 0;
+
+    sub.topics.forEach(tName => {
+      const p = (data.portionsProgress[activeSeg] && data.portionsProgress[activeSeg][sub.name] && data.portionsProgress[activeSeg][sub.name][tName]) || {};
+      if(p.classDone) subTicksDone++;
+      if(p.selfDone) subTicksDone++;
+      if(p.perfection) subTicksDone++;
+    });
+
+    const subPercent = subTicksMax ? Math.round((subTicksDone / subTicksMax) * 100) : 0;
+
+    html += `
+      <div class="portion-sub-block">
+        <div class="portion-sub-header">
+          <div class="portion-sub-name">${sub.name}</div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <button class="btn-icon-action" title="Add Chapter to Subject" onclick="addNewTopicPrompt('${activeSeg}', ${subIdx})">+ Add Chp</button>
+            <div class="portion-sub-pct">${subPercent}%</div>
+          </div>
+        </div>
+        <div class="prog-bar-wrap"><div class="prog-bar" style="width:${subPercent}%"></div></div>
+        <div>
+          ${sub.topics.map((tName, tIdx) => {
+            const p = (data.portionsProgress[activeSeg] && data.portionsProgress[activeSeg][sub.name] && data.portionsProgress[activeSeg][sub.name][tName]) || {};
+            const noteKey = activeSeg + "__" + sub.name + "__" + tName;
+            const noteObj = data.chapterNotes[noteKey] || { text: "", images: [] };
+            const hasNotes = (noteObj.text && noteObj.text.trim()) || (noteObj.images && noteObj.images.length > 0);
+
+            return `
+              <div class="topic-item">
+                <div class="topic-title">${tName}</div>
+                <div class="topic-tools">
+                  <button class="btn-icon-action" title="Open Notes & Camera" onclick="openChapterNotes('${activeSeg}', ${subIdx}, ${tIdx})">
+                    ${hasNotes ? '📝📷 ✓' : '📝📷'}
+                  </button>
+                  <button class="btn-icon-action" title="Edit Chapter Name" onclick="openEditTopic('${activeSeg}', ${subIdx}, ${tIdx})">
+                    ✎
+                  </button>
+                  <button class="btn-icon-action" title="Delete Chapter" style="color:var(--danger);" onclick="deleteTopicItem('${activeSeg}', ${subIdx}, ${tIdx})">
+                    ×
+                  </button>
+                </div>
+                <div class="tick-cluster">
+                  <div class="tick-box" onclick="toggleTick('${activeSeg}', ${subIdx}, ${tIdx}, 'classDone')">
+                    <div class="tick-square ${p.classDone?'ticked':''}"> ${p.classDone?'✓':''}</div>
+                    <span>Class</span>
+                  </div>
+                  <div class="tick-box" onclick="toggleTick('${activeSeg}', ${subIdx}, ${tIdx}, 'selfDone')">
+                    <div class="tick-square ${p.selfDone?'ticked':''}"> ${p.selfDone?'✓':''}</div>
+                    <span>Self</span>
+                  </div>
+                  <div class="tick-box" onclick="toggleTick('${activeSeg}', ${subIdx}, ${tIdx}, 'perfection')">
+                    <div class="tick-square ${p.perfection?'ticked':''}"> ${p.perfection?'✓':''}</div>
+                    <span>Perfect</span>
+                  </div>
+                </div>
+              </div>
+            `;
+          }).join("")}
+        </div>
+      </div>
+    `;
+  });
+
+  container.innerHTML = html;
+}
+
+function setSeg(segKey) {
+  activeSeg = segKey;
+  renderPortions();
+}
+
+function toggleTick(segKey, subIdx, topicIdx, tickKey) {
+  const sub = data.portionsStructure[segKey].subjects[subIdx];
+  const topicName = sub.topics[topicIdx];
+
+  if(!data.portionsProgress[segKey]) data.portionsProgress[segKey] = {};
+  if(!data.portionsProgress[segKey][sub.name]) data.portionsProgress[segKey][sub.name] = {};
+  if(!data.portionsProgress[segKey][sub.name][topicName]) {
+    data.portionsProgress[segKey][sub.name][topicName] = { classDone: false, selfDone: false, perfection: false };
+  }
+
+  const p = data.portionsProgress[segKey][sub.name][topicName];
+  p[tickKey] = !p[tickKey];
+  save();
+  renderPortions();
+  if(p[tickKey]) celebrate(topicName + " (" + tickKey.replace('Done','') + " marked)");
+}
+
+// ADD, EDIT & DELETE PORTIONS DIRECTLY
+function addNewTopicPrompt(segKey, subIdx) {
+  const t = prompt("Enter new Chapter / Portion name:");
+  if(!t || !t.trim()) return;
+  const newName = t.trim();
+  const sub = data.portionsStructure[segKey].subjects[subIdx];
+  sub.topics.push(newName);
+
+  if(!data.portionsProgress[segKey]) data.portionsProgress[segKey] = {};
+  if(!data.portionsProgress[segKey][sub.name]) data.portionsProgress[segKey][sub.name] = {};
+  data.portionsProgress[segKey][sub.name][newName] = { classDone: false, selfDone: false, perfection: false };
+
+  save();
+  renderPortions();
+}
+
+function openEditTopic(segKey, subIdx, topicIdx) {
+  activeContext = { segKey, subIdx, topicIdx };
+  const oldTitle = data.portionsStructure[segKey].subjects[subIdx].topics[topicIdx];
+  document.getElementById("editTopicTitleInput").value = oldTitle;
+  openModal("editTopicModal");
+}
+
+function saveEditedTopicTitle() {
+  const { segKey, subIdx, topicIdx } = activeContext;
+  const newTitle = document.getElementById("editTopicTitleInput").value.trim();
+  if(!newTitle) return;
+
+  const sub = data.portionsStructure[segKey].subjects[subIdx];
+  const oldTitle = sub.topics[topicIdx];
+  sub.topics[topicIdx] = newTitle;
+
+  // Migrate progress state
+  if(data.portionsProgress[segKey] && data.portionsProgress[segKey][sub.name]) {
+    const oldProg = data.portionsProgress[segKey][sub.name][oldTitle];
+    if(oldProg) {
+      data.portionsProgress[segKey][sub.name][newTitle] = oldProg;
+      delete data.portionsProgress[segKey][sub.name][oldTitle];
+    }
+  }
+
+  // Migrate notes state
+  const oldKey = segKey + "__" + sub.name + "__" + oldTitle;
+  const newKey = segKey + "__" + sub.name + "__" + newTitle;
+  if(data.chapterNotes[oldKey]) {
+    data.chapterNotes[newKey] = data.chapterNotes[oldKey];
+    delete data.chapterNotes[oldKey];
+  }
+
+  save();
+  closeModal("editTopicModal");
+  renderPortions();
+}
+
+function deleteTopicItem(segKey, subIdx, topicIdx) {
+  if(!confirm("Remove this chapter from portions?")) return;
+  const sub = data.portionsStructure[segKey].subjects[subIdx];
+  const [removed] = sub.topics.splice(topicIdx, 1);
+
+  if(data.portionsProgress[segKey] && data.portionsProgress[segKey][sub.name]) {
+    delete data.portionsProgress[segKey][sub.name][removed];
+  }
+  const noteKey = segKey + "__" + sub.name + "__" + removed;
+  delete data.chapterNotes[noteKey];
+
+  save();
+  renderPortions();
+}
+
+// CHAPTER NOTES & CAMERA SYSTEM
+function openChapterNotes(segKey, subIdx, topicIdx) {
+  const sub = data.portionsStructure[segKey].subjects[subIdx];
+  const topicName = sub.topics[topicIdx];
+  activeContext = { segKey, subIdx, topicIdx, topicKey: segKey + "__" + sub.name + "__" + topicName };
+
+  document.getElementById("modalTopicHeader").textContent = "Notes: " + topicName;
+  const noteObj = data.chapterNotes[activeContext.topicKey] || { text: "", images: [] };
+
+  document.getElementById("chapterNoteText").value = noteObj.text || "";
+  renderNotesGallery(noteObj.images || []);
+  openModal("chapterNotesModal");
+}
+
+function renderNotesGallery(images) {
+  const gallery = document.getElementById("modalNotesGallery");
+  gallery.innerHTML = images.map((imgSrc, idx) => `
+    <div class="note-thumb-wrap">
+      <img class="note-thumb-img" src="${imgSrc}" onclick="viewFullImage('${imgSrc}')" alt="Note Snap"/>
+      <button class="note-thumb-del" onclick="deleteNoteImage(${idx})">×</button>
+    </div>
+  `).join("");
+}
+
+function handleImageCapture(event) {
+  const file = event.target.files[0];
+  if(!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const key = activeContext.topicKey;
+    if(!data.chapterNotes[key]) data.chapterNotes[key] = { text: "", images: [] };
+    if(!data.chapterNotes[key].images) data.chapterNotes[key].images = [];
+
+    // Store base64 image
+    data.chapterNotes[key].images.push(e.target.result);
+    renderNotesGallery(data.chapterNotes[key].images);
+    save();
+  };
+  reader.readAsDataURL(file);
+  event.target.value = ""; // reset input
+}
+
+function deleteNoteImage(idx) {
+  const key = activeContext.topicKey;
+  if(data.chapterNotes[key] && data.chapterNotes[key].images) {
+    data.chapterNotes[key].images.splice(idx, 1);
+    renderNotesGallery(data.chapterNotes[key].images);
+    save();
+  }
+}
+
+function viewFullImage(src) {
+  const w = window.open("");
+  w.document.write(`<body style="margin:0;background:#0b0f19;display:flex;align-items:center;justify-content:center;height:100vh;"><img src="${src}" style="max-width:100%;max-height:100%;object-fit:contain;"/></body>`);
+}
+
+function saveChapterNotes() {
+  const key = activeContext.topicKey;
+  if(!data.chapterNotes[key]) data.chapterNotes[key] = { text: "", images: [] };
+  data.chapterNotes[key].text = document.getElementById("chapterNoteText").value;
+  save();
+  closeModal("chapterNotesModal");
+  renderPortions();
+  celebrate("Chapter notes saved!");
+}
+
+// DAILY TASKS
+function addTodayTask() {
+  const el = document.getElementById("newTodayTaskInput");
+  const val = el.value.trim();
+  if(!val) return;
+  data.todayTasks.push({ id: Date.now(), name: val, done: false });
+  el.value = "";
+  save();
+  renderOverview();
+}
+function toggleTodayTask(idx) {
+  data.todayTasks[idx].done = !data.todayTasks[idx].done;
+  save();
+  renderOverview();
+  if(data.todayTasks[idx].done) celebrate(data.todayTasks[idx].name);
+}
+function deleteTodayTask(idx) {
+  data.todayTasks.splice(idx, 1);
+  save();
+  renderOverview();
+}
+
+// BACKLOG
+function renderBacklog() {
+  const container = document.getElementById("tabBacklog");
+  container.innerHTML = `
+    <div class="card">
+      <div class="card-title">Backlog & Task List</div>
+      <button class="btn-primary" style="margin-bottom:14px;" onclick="openModal('addBacklogModal')">+ Add Backlog Item</button>
+      ${!data.backlog.length ? `<div class="empty">No pending backlog! You're completely up to date.</div>` :
+        data.backlog.map((b, idx) => `
+          <div class="task-row">
+            <div class="task-check ${b.done?"done":""}" onclick="toggleBacklog(${idx})">${b.done?"✓":""}</div>
+            <div style="flex:1;">
+              <div class="task-text ${b.done?"done":""}">${b.name}</div>
+              ${b.dueBy ? `<div style="font-size:12px;color:var(--accent2);margin-top:2px;">Target: ${fmtDate(b.dueBy)}</div>` : ''}
+            </div>
+            <button class="task-del" onclick="deleteBacklog(${idx})">×</button>
+          </div>
+        `).join("")
+      }
+    </div>
+  `;
+}
+function saveBacklog() {
+  const name = document.getElementById("newBacklogName").value.trim();
+  if(!name) return;
+  const due = document.getElementById("newBacklogDue").value;
+  data.backlog.push({ id: Date.now(), name, dueBy: due, done: false });
+  document.getElementById("newBacklogName").value = "";
+  document.getElementById("newBacklogDue").value = "";
+  save();
+  closeModal("addBacklogModal");
+  renderBacklog();
+}
+function toggleBacklog(idx) {
+  data.backlog[idx].done = !data.backlog[idx].done;
+  save();
+  renderBacklog();
+}
+function deleteBacklog(idx) {
+  data.backlog.splice(idx, 1);
+  save();
+  renderBacklog();
+}
+
+// TESTS
+function renderTests() {
+  const container = document.getElementById("tabTests");
+  container.innerHTML = `
+    <div class="card">
+      <div class="card-title">Upcoming Tests</div>
+      <button class="btn-primary" style="margin-bottom:14px;" onclick="openModal('addTestModal')">+ Schedule New Test</button>
+      ${!data.tests.length ? `<div class="empty">No tests scheduled yet.</div>` :
+        data.tests.map((t, idx) => `
+          <div class="task-row">
+            <div style="flex:1;">
+              <div style="font-size:14px;font-weight:700;color:var(--text);">${t.name}</div>
+              <div style="font-size:12px;color:var(--accent2);margin-top:2px;">📅 ${fmtDate(t.date)} (${daysUntil(t.date)} days left)</div>
+            </div>
+            <button class="btn-outline-sm" onclick="deleteTest(${idx})">Delete</button>
+          </div>
+        `).join("")
+      }
+    </div>
+  `;
+}
+function saveTest() {
+  const name = document.getElementById("testName").value.trim();
+  const date = document.getElementById("testDate").value;
+  if(!name || !date) return;
+  data.tests.push({ id: Date.now(), name, date });
+  document.getElementById("testName").value = "";
+  document.getElementById("testDate").value = "";
+  save();
+  closeModal("addTestModal");
+  renderTests();
+}
+function deleteTest(idx) {
+  data.tests.splice(idx, 1);
+  save();
+  renderTests();
+}
+
+// STATS
+function renderStats() {
+  const container = document.getElementById("tabStats");
+  container.innerHTML = `
+    <div class="card">
+      <div class="card-title">Exam Architecture & Structure</div>
+      <div style="font-size:14px;color:var(--text2);line-height:1.7;">
+        <b>🎯 12th Commerce Board (MSBSHSE):</b><br/>
+        • BK & Accountancy, Economics, OCM, Maths & Stats, English (Full prose, poetry, writing skills & novels with serial numbers), and French (Rencontres ! Part - 2, Leçons 0 to 6 with grammar & writing skills).<br/><br/>
+        <b>🎯 CA Foundation (Accurate Scheme):</b><br/>
+        • Paper 1: Accounting (100 Marks | Descriptive)<br/>
+        • Paper 2: Business Laws (100 Marks | Indian Regulatory Framework, Contract Act, Sale of Goods, Partnership, LLP, Companies Act, Negotiable Instruments)<br/>
+        • Paper 3: Quantitative Aptitude (100 Marks | Part A: Business Maths, Part B: Logical Reasoning, Part C: Statistics)<br/>
+        • Paper 4: Business Economics (100 Marks | Macro, Micro & Indian Economy)<br/><br/>
+        <b>✅ Direct Features:</b> Click 📝📷 on any chapter to write notes or click photo/camera to attach snapshots directly. Click ✎ to rename or update any portion on the fly.
+      </div>
+    </div>
+  `;
+}
+
+// TIMER ENGINE
+let timerHandle = null;
+function fmtHMS(sec) {
+  sec = Math.max(0, Math.floor(sec));
+  const h = Math.floor(sec / 3600);
+  const m = Math.floor((sec % 3600) / 60);
+  const s = sec % 60;
+  return String(h).padStart(2,"0") + ":" + String(m).padStart(2,"0") + ":" + String(s).padStart(2,"0");
+}
+function fmtHoursMins(sec) {
+  const h = Math.floor(sec / 3600), m = Math.floor((sec % 3600) / 60);
+  return (h > 0 ? h + "h " : "") + m + "m";
+}
+function currentTimerElapsed() {
+  let e = data.timerAccum || 0;
+  if(data.timerState === "running" && data.timerStartTs) e += (Date.now() - data.timerStartTs) / 1000;
+  return e;
+}
+function updateTimerDisplay() {
+  const el = document.getElementById("timerDisplay");
+  if(el) el.textContent = fmtHMS(currentTimerElapsed());
+}
+function startTimerTick() {
+  if(timerHandle) clearInterval(timerHandle);
+  timerHandle = setInterval(updateTimerDisplay, 1000);
+}
+function stopTimerTick() {
+  if(timerHandle) { clearInterval(timerHandle); timerHandle = null; }
+}
+function startOrResumeTimer() {
+  data.timerState = "running";
+  data.timerStartTs = Date.now();
+  data.timerAccum = data.timerAccum || 0;
+  save();
+  startTimerTick();
+  renderOverview();
+}
+function pauseTimer() {
+  data.timerAccum = currentTimerElapsed();
+  data.timerState = "paused";
+  data.timerStartTs = null;
+  stopTimerTick();
+  save();
+  renderOverview();
+}
+function stopTimer() {
+  const elapsed = currentTimerElapsed();
+  const k = new Date().toISOString().slice(0,10);
+  data.studyLog = data.studyLog || {};
+  data.studyLog[k] = (data.studyLog[k] || 0) + elapsed;
+  data.timerState = "idle";
+  data.timerStartTs = null;
+  data.timerAccum = 0;
+  stopTimerTick();
+  save();
+  renderOverview();
+  if(elapsed >= 60) celebrate("Logged " + fmtHMS(elapsed) + " study time.");
+}
+
+function saveCDs() {
+  data.boardsDate = document.getElementById("cdBInput").value;
+  data.caDate = document.getElementById("cdCInput").value;
+  save();
+  closeModal("cdModal");
+  renderOverview();
+}
+
+function openModal(id) { document.getElementById(id).classList.add("open"); }
+function closeModal(id) { document.getElementById(id).classList.remove("open"); }
+
+window.onload = initApp;
+</script></body></html>
