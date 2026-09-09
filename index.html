@@ -6,427 +6,1873 @@
   <meta name="apple-mobile-web-app-capable" content="yes"/>
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
   <meta name="apple-mobile-web-app-title" content="Study Planner Pro"/>
-  <meta name="theme-color" content="#090d16"/>
-  <title>Study Planner Pro</title>
+  <meta name="theme-color" content="#07090e"/>
+  <title>Study Planner Pro — 12th HSC Commerce & CA Foundation</title>
   <style>
     :root {
-      --bg: #090d16;
-      --bg2: #111827;
-      --bg3: #1f293d;
-      --border: #24324d;
-      --border2: #33446b;
-      
-      /* 12th Boards = Blue */
+      --bg: #07090e;
+      --surface: #0f1420;
+      --surface-elevated: #161e30;
+      --surface-border: #232f48;
+      --border-subtle: rgba(255, 255, 255, 0.08);
+
       --boards-accent: #38bdf8;
       --boards-deep: #0284c7;
-      --boards-bg: rgba(2, 132, 199, 0.12);
-      
-      /* CAFC = Purple */
+
       --ca-accent: #c084fc;
       --ca-deep: #9333ea;
-      --ca-bg: rgba(147, 51, 234, 0.14);
 
       --text: #f8fafc;
-      --text2: #cbd5e1;
-      --text3: #94a3b8;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      
       --danger: #f43f5e;
-      --success: #22c55e;
-      --gold: #fbbf24;
+      --warning: #fbbf24;
+      --success: #10b981;
 
       /* 5-Stage Tick Palette */
-      --tick-1: #ef4444; /* Red */
-      --tick-2: #d946ef; /* Purplish Red / Magenta */
-      --tick-3: #8b5cf6; /* Purplish Blue */
-      --tick-4: #38bdf8; /* Full Blue */
-      --tick-5: #22c55e; /* Green / Perfection */
+      --stage-1: #ef4444; /* Lecture / Class */
+      --stage-2: #f59e0b; /* Self Study / Notes */
+      --stage-3: #8b5cf6; /* Revision 1 */
+      --stage-4: #0284c7; /* Revision 2 */
+      --stage-5: #10b981; /* Mastered / Perfected */
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
     body {
       background: var(--bg);
       color: var(--text);
-      font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', system-ui, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
       min-height: 100vh;
       overflow-x: hidden;
+      line-height: 1.4;
     }
     button, input, select, textarea { font-family: inherit; }
     button { cursor: pointer; }
 
-    /* SPLASH */
+    /* SPLASH SCREEN */
     #splash {
       position: fixed; inset: 0; z-index: 9999;
-      background: #090d16;
+      background: #07090e;
       display: flex; flex-direction: column; align-items: center; justify-content: center;
-      transition: opacity 0.5s ease;
+      transition: opacity 0.4s ease, visibility 0.4s ease;
     }
-    #splash.fade-out { opacity: 0; pointer-events: none; }
-    .orb { position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.2; }
-    .orb1 { width: 300px; height: 300px; background: var(--boards-deep); top: -80px; left: -80px; }
-    .orb2 { width: 280px; height: 280px; background: var(--ca-deep); bottom: -60px; right: -60px; }
-    .splash-title { font-size: 36px; font-weight: 900; letter-spacing: -0.5px; }
+    #splash.fade-out { opacity: 0; visibility: hidden; pointer-events: none; }
+    .splash-glow {
+      position: absolute; width: 340px; height: 340px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(56,189,248,0.22) 0%, rgba(147,51,234,0.18) 60%, transparent 80%);
+      filter: blur(55px);
+    }
+    .splash-title { font-size: 32px; font-weight: 900; letter-spacing: -0.5px; z-index: 1; }
     .splash-title .b-blue { color: var(--boards-accent); }
     .splash-title .c-purple { color: var(--ca-accent); }
-    .splash-by { font-size: 13px; color: var(--text3); margin-top: 6px; letter-spacing: 1px; }
+    .splash-sub { font-size: 11px; color: var(--text-dim); letter-spacing: 2px; text-transform: uppercase; margin-top: 6px; z-index: 1; }
 
-    /* TOP BAR */
-    .download-bar {
-      background: linear-gradient(90deg, #0369a1, #6b21a8);
-      color: #fff;
-      padding: 8px 14px;
-      display: flex; align-items: center; justify-content: space-between;
-      font-size: 12px; font-weight: 600;
-      position: sticky; top: 0; z-index: 60;
+    /* SYSTEM BAR */
+    .system-bar {
+      background: linear-gradient(90deg, rgba(2,132,199,0.85), rgba(147,51,234,0.85));
+      backdrop-filter: blur(8px);
+      color: #fff; padding: 7px 14px; display: flex; align-items: center; justify-content: space-between;
+      font-size: 11px; font-weight: 600; position: sticky; top: 0; z-index: 100;
     }
-    .download-bar button {
-      background: #090d16; color: #fff;
-      border: 1px solid rgba(255,255,255,0.2);
-      border-radius: 6px; padding: 4px 10px; font-size: 11px; font-weight: 700;
+    .system-bar button {
+      background: rgba(7, 9, 14, 0.7); color: #fff;
+      border: 1px solid rgba(255,255,255,0.25); border-radius: 6px;
+      padding: 3px 8px; font-size: 10px; font-weight: 700;
     }
 
     /* HEADER */
     .header {
-      background: rgba(17, 24, 39, 0.9);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--border);
-      padding: calc(12px + env(safe-area-inset-top)) 16px 12px;
-      position: sticky; top: 34px; z-index: 50;
+      background: rgba(15, 20, 32, 0.85); backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--surface-border);
+      padding: calc(10px + env(safe-area-inset-top)) 16px 12px;
+      position: sticky; top: 29px; z-index: 90;
       display: flex; align-items: center; justify-content: space-between;
     }
     .header-logo {
-      font-size: 18px; font-weight: 900;
-      background: linear-gradient(120deg, var(--boards-accent), var(--ca-accent));
+      font-size: 17px; font-weight: 800; letter-spacing: -0.2px;
+      background: linear-gradient(135deg, #38bdf8, #c084fc);
       -webkit-background-clip: text; background-clip: text; color: transparent;
     }
-    .header-sub { font-size: 12px; color: var(--text2); margin-top: 2px; }
+    .header-tag { font-size: 11px; color: var(--text-dim); }
     .header-actions { display: flex; align-items: center; gap: 8px; }
-    .streak-pill {
+    
+    .streak-badge {
       background: rgba(251, 191, 36, 0.12);
-      border: 1px solid rgba(251, 191, 36, 0.3);
-      color: var(--gold);
-      padding: 5px 9px;
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: 800;
-      display: flex;
-      align-items: center;
-      gap: 4px;
+      border: 1px solid rgba(251, 191, 36, 0.35);
+      color: var(--warning); padding: 4px 10px; border-radius: 20px;
+      font-size: 12px; font-weight: 800; display: flex; align-items: center; gap: 4px;
     }
-    .btn-action-round {
+    .btn-circle {
       width: 34px; height: 34px; border-radius: 50%;
-      background: var(--bg3); border: 1px solid var(--border2);
-      color: var(--text); font-size: 15px;
-      display: flex; align-items: center; justify-content: center;
+      background: var(--surface-elevated); border: 1px solid var(--surface-border);
+      color: var(--text); font-size: 14px; display: flex; align-items: center; justify-content: center;
+      transition: background 0.2s;
     }
+    .btn-circle:hover { background: var(--surface-border); }
 
     /* BOTTOM NAV */
     .bottom-nav {
       position: fixed; bottom: 0; left: 0; right: 0;
-      background: rgba(17, 24, 39, 0.95);
-      backdrop-filter: blur(10px);
-      border-top: 1px solid var(--border);
+      background: rgba(15, 20, 32, 0.95); backdrop-filter: blur(20px);
+      border-top: 1px solid var(--surface-border);
       display: flex; padding-bottom: env(safe-area-inset-bottom);
-      z-index: 50;
+      z-index: 90;
     }
-    .nav-item {
+    .nav-btn {
       flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
-      padding: 10px 4px 8px; background: none; border: none;
-      color: var(--text3); font-size: 11px; font-weight: 600; gap: 4px;
+      padding: 9px 0 7px; background: none; border: none; color: var(--text-dim);
+      font-size: 10px; font-weight: 700; gap: 3px; transition: color 0.2s ease;
     }
-    .nav-item.active { color: var(--boards-accent); }
-    .nav-item.active.cafc-tab { color: var(--ca-accent); }
-    .nav-icon { font-size: 18px; }
+    .nav-btn.active { color: var(--boards-accent); }
+    .nav-btn svg { width: 20px; height: 20px; stroke-width: 2.2; fill: none; stroke: currentColor; }
 
-    /* LAYOUT & CARDS */
-    .page { padding: 14px 16px 110px; max-width: 600px; margin: 0 auto; }
+    /* PAGE LAYOUT & CARDS */
+    .page { padding: 14px 16px 120px; max-width: 600px; margin: 0 auto; }
     .card {
-      background: var(--bg2); border: 1px solid var(--border);
+      background: var(--surface); border: 1px solid var(--surface-border);
       border-radius: 16px; padding: 16px; margin-top: 14px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    }
+    .card-header {
+      display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;
     }
     .card-title {
-      font-size: 12px; font-weight: 800; color: var(--text3);
-      letter-spacing: 0.8px; text-transform: uppercase; margin-bottom: 12px;
-    }
-    .empty { text-align: center; color: var(--text3); font-size: 13px; padding: 20px 0; }
-
-    /* BANNER ROLLOVER */
-    .roll-banner {
-      background: rgba(56, 189, 248, 0.08);
-      border: 1px dashed var(--boards-accent);
-      border-radius: 12px;
-      padding: 10px 12px;
-      margin-bottom: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
+      font-size: 11px; font-weight: 800; color: var(--text-dim);
+      letter-spacing: 0.8px; text-transform: uppercase;
     }
 
     /* COUNTDOWN */
-    .countdown-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 14px; }
-    .cd-card { border-radius: 14px; padding: 16px 14px; text-align: center; cursor: pointer; border: 1px solid; }
-    .cd-card.boards { background: var(--boards-bg); border-color: rgba(56, 189, 248, 0.4); }
+    .countdown-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+    .cd-card {
+      border-radius: 14px; padding: 14px; text-align: center; cursor: pointer;
+      position: relative; overflow: hidden; border: 1px solid;
+    }
+    .cd-card.boards { background: linear-gradient(180deg, rgba(2,132,199,0.12), rgba(2,132,199,0.02)); border-color: rgba(56,189,248,0.3); }
+    .cd-card.ca { background: linear-gradient(180deg, rgba(147,51,234,0.12), rgba(147,51,234,0.02)); border-color: rgba(192,132,252,0.3); }
+    .cd-days { font-size: 32px; font-weight: 900; line-height: 1; }
     .cd-card.boards .cd-days { color: var(--boards-accent); }
-    .cd-card.ca { background: var(--ca-bg); border-color: rgba(192, 132, 252, 0.4); }
     .cd-card.ca .cd-days { color: var(--ca-accent); }
-    .cd-days { font-size: 34px; font-weight: 900; line-height: 1; }
-    .cd-label { font-size: 12px; font-weight: 700; margin-top: 6px; text-transform: uppercase; }
-    .cd-date { font-size: 11px; color: var(--text3); margin-top: 3px; }
+    .cd-label { font-size: 11px; font-weight: 800; margin-top: 6px; text-transform: uppercase; }
+    .cd-sub { font-size: 10px; color: var(--text-muted); margin-top: 2px; }
 
-    /* PROGRESS BARS */
-    .prog-bar-wrap { background: var(--bg3); border-radius: 6px; height: 6px; overflow: hidden; margin: 8px 0; }
-    .prog-bar-fill { height: 100%; border-radius: 6px; transition: width 0.3s ease; }
+    /* STOPWATCH */
+    .timer-display {
+      font-size: 42px; font-weight: 900; font-variant-numeric: tabular-nums;
+      text-align: center; margin: 12px 0; letter-spacing: 1px;
+    }
+    .timer-controls { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+
+    /* PROGRESS TRACKS */
+    .prog-track { background: var(--surface-elevated); border-radius: 100px; height: 6px; overflow: hidden; margin: 8px 0; }
+    .prog-bar { height: 100%; border-radius: 100px; transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
     .fill-boards { background: linear-gradient(90deg, var(--boards-deep), var(--boards-accent)); }
     .fill-ca { background: linear-gradient(90deg, var(--ca-deep), var(--ca-accent)); }
 
     /* SEGMENTS */
-    .seg-tabs { display: flex; gap: 6px; background: var(--bg3); padding: 4px; border-radius: 12px; margin-bottom: 14px; }
-    .seg-btn {
-      flex: 1; border: none; background: none; color: var(--text3);
-      font-weight: 700; font-size: 13px; padding: 9px; border-radius: 8px; transition: all 0.2s;
+    .segmented { display: flex; gap: 4px; background: var(--surface-elevated); padding: 4px; border-radius: 12px; margin-bottom: 14px; }
+    .segmented-btn {
+      flex: 1; border: none; background: none; color: var(--text-muted);
+      font-weight: 700; font-size: 12px; padding: 8px 0; border-radius: 8px; transition: all 0.2s ease;
     }
-    .seg-btn.active.boards { background: var(--boards-accent); color: #090d16; }
-    .seg-btn.active.ca { background: var(--ca-accent); color: #090d16; }
+    .segmented-btn.active.boards { background: var(--boards-accent); color: #07090e; }
+    .segmented-btn.active.ca { background: var(--ca-accent); color: #07090e; }
 
-    /* PORTION SUBJECTS & SECTIONS */
-    .portion-sub-block { background: var(--bg2); border: 1px solid var(--border); border-radius: 14px; padding: 14px; margin-top: 12px; }
-    .portion-sub-header { display: flex; justify-content: space-between; align-items: center; }
-    .portion-sub-name { font-size: 14px; font-weight: 800; color: var(--text); }
-    .portion-sub-pct { font-size: 13px; font-weight: 800; }
-    .color-boards { color: var(--boards-accent); }
-    .color-ca { color: var(--ca-accent); }
+    /* SUBJECT CARD ACCORDION */
+    .sub-card {
+      background: var(--surface); border: 1px solid var(--surface-border);
+      border-radius: 14px; margin-top: 10px; overflow: hidden;
+    }
+    .sub-header {
+      padding: 14px; display: flex; align-items: center; justify-content: space-between;
+      cursor: pointer; user-select: none;
+    }
+    .sub-header:hover { background: rgba(255,255,255,0.015); }
+    .sub-info { flex: 1; padding-right: 12px; }
+    .sub-title { font-size: 14px; font-weight: 800; color: var(--text); }
+    .sub-pct { font-size: 12px; font-weight: 800; font-variant-numeric: tabular-nums; }
+    .sub-content { padding: 4px 12px 14px; border-top: 1px solid rgba(255,255,255,0.04); display: flex; flex-direction: column; gap: 8px; }
 
-    .topic-item {
+    /* CAFC CHAPTER LEVEL ACCORDION */
+    .chp-card {
+      background: var(--surface-elevated); border: 1px solid var(--border-subtle);
+      border-radius: 10px; overflow: hidden;
+    }
+    .chp-header {
+      padding: 10px 12px; display: flex; align-items: center; justify-content: space-between;
+      cursor: pointer; user-select: none;
+    }
+    .chp-header:hover { background: rgba(255,255,255,0.02); }
+    .chp-title { font-size: 12.5px; font-weight: 700; color: var(--text); flex: 1; padding-right: 8px; }
+    .chp-pct { font-size: 11px; font-weight: 800; margin-right: 8px; font-variant-numeric: tabular-nums; }
+    .units-list {
+      padding: 6px 10px 10px; border-top: 1px solid rgba(255,255,255,0.04);
+      display: flex; flex-direction: column; gap: 6px; background: rgba(0,0,0,0.15);
+    }
+
+    /* DIRECT ITEM (12th Chapter or CAFC Unit) */
+    .item-card {
       display: flex; align-items: center; justify-content: space-between;
-      gap: 8px; padding: 9px 10px; background: var(--bg3);
-      border-radius: 10px; margin-top: 8px; border: 1px solid var(--border);
+      background: var(--surface-elevated); border: 1px solid var(--border-subtle);
+      border-radius: 8px; padding: 9px 10px; gap: 10px;
     }
-    .topic-title { font-size: 12.5px; font-weight: 500; color: var(--text); flex: 1; line-height: 1.35; }
+    .item-name { font-size: 12.5px; font-weight: 500; color: var(--text); line-height: 1.35; flex: 1; }
+    .tick-strip { display: flex; gap: 4px; align-items: center; }
     
-    /* 5-STAGE TICK BAR */
-    .tick-cluster { display: flex; gap: 4px; align-items: center; flex-shrink: 0; }
-    .tick-box { display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: 8px; font-weight: 700; color: var(--text3); cursor: pointer; }
-    .tick-square {
-      width: 20px; height: 20px; border-radius: 5px; border: 1.5px solid var(--border2);
-      background: var(--bg2); display: flex; align-items: center; justify-content: center; transition: all 0.15s ease;
-      font-size: 10px; font-weight: 900;
+    .tick-box {
+      width: 20px; height: 20px; border-radius: 5px; border: 1.5px solid var(--surface-border);
+      background: var(--surface); display: flex; align-items: center; justify-content: center;
+      font-size: 8.5px; font-weight: 900; color: var(--text-dim); cursor: pointer;
+      transition: all 0.15s ease;
     }
-    /* 5 STAGES */
-    .tick-square.t-s1 { background: var(--tick-1); border-color: var(--tick-1); color: #fff; }
-    .tick-square.t-s2 { background: var(--tick-2); border-color: var(--tick-2); color: #fff; }
-    .tick-square.t-s3 { background: var(--tick-3); border-color: var(--tick-3); color: #fff; }
-    .tick-square.t-s4 { background: var(--tick-4); border-color: var(--tick-4); color: #090d16; }
-    .tick-square.t-s5 { background: var(--tick-5); border-color: var(--tick-5); color: #090d16; }
+    .tick-box.done-1 { background: var(--stage-1); border-color: var(--stage-1); color: #fff; }
+    .tick-box.done-2 { background: var(--stage-2); border-color: var(--stage-2); color: #07090e; }
+    .tick-box.done-3 { background: var(--stage-3); border-color: var(--stage-3); color: #fff; }
+    .tick-box.done-4 { background: var(--stage-4); border-color: var(--stage-4); color: #fff; }
+    .tick-box.done-5 { background: var(--stage-5); border-color: var(--stage-5); color: #07090e; }
 
-    /* TASKS */
-    .task-row { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); }
-    .task-row:last-child { border-bottom: none; }
-    .task-text { flex: 1; font-size: 13px; color: var(--text); cursor: pointer; }
-    .task-text.done { color: var(--text3); text-decoration: line-through; }
-    .task-del { background: none; border: none; color: var(--text3); font-size: 16px; padding: 0 4px; }
-    .source-tag { font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 4px; margin-right: 6px; display: inline-block; }
+    /* TARGET ROWS */
+    .target-item {
+      display: flex; align-items: center; gap: 10px; padding: 10px 0;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .target-item:last-child { border-bottom: none; }
+    .target-toggle {
+      width: 18px; height: 18px; border-radius: 6px;
+      border: 1.5px solid var(--text-dim); display: flex; align-items: center; justify-content: center;
+      cursor: pointer; flex-shrink: 0; font-size: 11px; font-weight: 900;
+    }
+    .target-toggle.checked { background: var(--success); border-color: var(--success); color: #07090e; }
+    .target-label { flex: 1; font-size: 13px; font-weight: 500; cursor: pointer; }
+    .target-label.completed { text-decoration: line-through; color: var(--text-dim); }
+    .target-delete { background: none; border: none; color: var(--text-dim); font-size: 15px; padding: 4px; }
+    .target-delete:hover { color: var(--danger); }
 
     /* BADGES */
-    .badge { font-size: 10px; font-weight: 800; text-transform: uppercase; padding: 2px 6px; border-radius: 5px; }
-    .badge-boards { background: var(--boards-bg); color: var(--boards-accent); border: 1px solid rgba(56,189,248,0.3); }
-    .badge-ca { background: var(--ca-bg); color: var(--ca-accent); border: 1px solid rgba(192,132,252,0.3); }
-    .badge-gen { background: var(--bg3); color: var(--text3); border: 1px solid var(--border2); }
-    .badge-p1 { background: rgba(244,63,94,0.15); color: #fb7185; }
-    .badge-p2 { background: rgba(251,191,36,0.15); color: #fde047; }
-    .badge-p3 { background: rgba(52,211,153,0.15); color: #6ee7b7; }
+    .tag { font-size: 9px; font-weight: 800; text-transform: uppercase; padding: 2px 6px; border-radius: 4px; letter-spacing: 0.4px; }
+    .tag-boards { background: rgba(56,189,248,0.12); color: var(--boards-accent); border: 1px solid rgba(56,189,248,0.3); }
+    .tag-ca { background: rgba(192,132,252,0.12); color: var(--ca-accent); border: 1px solid rgba(192,132,252,0.3); }
+    .tag-high { background: rgba(244,63,94,0.15); color: #fb7185; }
+    .tag-med { background: rgba(251,191,36,0.15); color: #fde047; }
+    .tag-low { background: rgba(16,185,129,0.15); color: #6ee7b7; }
 
-    /* TESTS STATS BANNER */
-    .test-analytics-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 12px; }
-    .t-stat-box { background: var(--bg3); border: 1px solid var(--border); border-radius: 10px; padding: 10px; text-align: center; }
-    .t-stat-val { font-size: 18px; font-weight: 900; margin-top: 2px; }
-    .t-stat-lbl { font-size: 10px; font-weight: 700; color: var(--text3); text-transform: uppercase; }
+    /* ANALYTICS */
+    .analytics-banner { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+    .stat-card {
+      background: var(--surface-elevated); border: 1px solid var(--border-subtle);
+      border-radius: 12px; padding: 10px; text-align: center;
+    }
+    .stat-val { font-size: 18px; font-weight: 900; }
+    .stat-lbl { font-size: 9px; font-weight: 800; color: var(--text-dim); text-transform: uppercase; margin-top: 2px; }
 
-    .test-card-item { background: var(--bg3); border: 1px solid var(--border); border-radius: 12px; padding: 12px; margin-top: 10px; }
-    .test-header { display: flex; justify-content: space-between; align-items: flex-start; }
-    .score-badge { background: var(--bg2); border: 1px solid var(--border2); border-radius: 8px; padding: 4px 8px; text-align: right; }
-
-    /* FORM ELEMENTS */
-    .input {
-      width: 100%; background: var(--bg3); border: 1px solid var(--border2);
+    /* FORMS & BUTTONS */
+    .form-input {
+      width: 100%; background: var(--surface-elevated); border: 1px solid var(--surface-border);
       border-radius: 10px; padding: 10px 12px; color: var(--text); font-size: 13px; outline: none;
+      transition: border-color 0.2s;
     }
-    .input:focus { border-color: var(--boards-accent); }
-    .btn-primary {
-      background: linear-gradient(135deg, var(--boards-deep), var(--boards-accent));
-      border: none; border-radius: 10px; color: #090d16; font-size: 14px; font-weight: 700;
-      padding: 10px; width: 100%;
+    .form-input:focus { border-color: var(--boards-accent); }
+    .btn {
+      padding: 10px 16px; border-radius: 10px; font-size: 13px; font-weight: 700;
+      display: inline-flex; align-items: center; justify-content: center; gap: 6px; border: none;
+      transition: opacity 0.2s, transform 0.1s;
     }
-    .btn-secondary {
-      background: var(--bg3); border: 1px solid var(--border2);
-      border-radius: 10px; color: var(--text2); font-size: 14px; font-weight: 600;
-      padding: 10px; width: 100%;
-    }
-    .btn-row { display: flex; gap: 8px; margin-top: 14px; }
-    .btn-row > * { flex: 1; }
+    .btn:active { transform: scale(0.98); }
+    .btn-full { width: 100%; }
+    .btn-brand { background: linear-gradient(135deg, var(--boards-deep), var(--boards-accent)); color: #07090e; }
+    .btn-dark { background: var(--surface-elevated); border: 1px solid var(--surface-border); color: var(--text-muted); }
+    .btn-danger { background: rgba(244,63,94,0.12); color: var(--danger); border: 1px solid rgba(244,63,94,0.3); }
 
     /* MODAL */
-    .modal-overlay {
-      display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.75);
-      z-index: 200; align-items: flex-end; justify-content: center; padding: 16px;
+    .modal-backdrop {
+      display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7);
+      backdrop-filter: blur(6px); z-index: 200; align-items: flex-end; justify-content: center;
     }
-    .modal-overlay.open { display: flex; }
-    .modal {
-      background: var(--bg2); border: 1px solid var(--border2);
-      border-radius: 20px; padding: 20px; width: 100%; max-width: 500px;
-      margin-bottom: env(safe-area-inset-bottom); max-height: 85vh; overflow-y: auto;
+    .modal-backdrop.active { display: flex; }
+    .modal-box {
+      background: var(--surface); border: 1px solid var(--surface-border);
+      border-radius: 20px 20px 0 0; padding: 20px; width: 100%; max-width: 550px;
+      max-height: 85vh; overflow-y: auto; box-shadow: 0 -8px 32px rgba(0,0,0,0.6);
     }
-    .modal h3 { font-size: 16px; font-weight: 800; margin-bottom: 12px; color: var(--text); }
-    .field-gap { margin-bottom: 12px; }
-    .field-label { font-size: 12px; color: var(--text2); font-weight: 600; margin-bottom: 4px; }
+    .modal-title { font-size: 16px; font-weight: 800; margin-bottom: 14px; }
+    .modal-group { margin-bottom: 12px; }
+    .modal-lbl { font-size: 11px; font-weight: 700; color: var(--text-muted); margin-bottom: 5px; text-transform: uppercase; }
 
-    /* CELEBRATION */
-    #celebOverlay {
-      position: fixed; inset: 0; z-index: 9998;
+    /* CELEBRATION TOAST */
+    #celebration {
+      position: fixed; inset: 0; z-index: 999;
       display: none; align-items: center; justify-content: center;
-      background: rgba(0,0,0,0.65); backdrop-filter: blur(4px);
+      background: rgba(0,0,0,0.6); backdrop-filter: blur(4px);
     }
-    #celebOverlay.show { display: flex; }
-    .celeb-box {
-      background: var(--bg2); border: 1px solid var(--boards-accent);
-      border-radius: 20px; padding: 28px 20px; max-width: 310px; width: 90%; text-align: center;
+    #celebration.active { display: flex; }
+    .celeb-card {
+      background: var(--surface); border: 1px solid var(--boards-accent);
+      border-radius: 20px; padding: 24px; text-align: center; max-width: 290px; width: 90%;
     }
-    .celeb-emoji { font-size: 46px; margin-bottom: 10px; display: block; }
-    .celeb-phrase { font-size: 16px; font-weight: 800; margin-bottom: 4px; }
-    .celeb-sub { font-size: 13px; color: var(--text3); margin-bottom: 16px; line-height: 1.4; }
   </style>
 </head>
 <body>
 
 <div id="splash">
-  <div class="orb orb1"></div>
-  <div class="orb orb2"></div>
+  <div class="splash-glow"></div>
   <div class="splash-title"><span class="b-blue">12th</span> & <span class="c-purple">CAFC</span></div>
-  <div class="splash-by">STUDY PLANNER PRO</div>
+  <div class="splash-sub">Study Planner Pro</div>
 </div>
 
-<div id="celebOverlay">
-  <div class="celeb-box" id="celebBox">
-    <span class="celeb-emoji" id="celebEmoji">⚡</span>
-    <div class="celeb-phrase" id="celebPhrase"></div>
-    <div class="celeb-sub" id="celebSub"></div>
-    <button class="btn-primary" style="padding:8px 20px;" onclick="closeCaleb()">Keep Rolling</button>
-  </div>
-</div>
-
-<div class="download-bar" id="downloadBar">
-  <span>📱 Offline App Ready</span>
+<div class="system-bar" id="systemBar">
+  <span>⚡ Offline Engine Active • Balbharati & ICAI Verified</span>
   <div style="display:flex;gap:6px;align-items:center;">
     <button onclick="downloadSelfHTML()">Save File</button>
-    <button onclick="openModal('syncModal')">Backup/Sync</button>
-    <span onclick="document.getElementById('downloadBar').style.display='none'" style="cursor:pointer;font-size:16px;margin-left:4px;">×</span>
+    <button onclick="exportJSONBackup()">Backup</button>
+    <button onclick="openModal('syncModal')">Restore</button>
+    <span onclick="document.getElementById('systemBar').style.display='none'" style="cursor:pointer;font-size:14px;padding-left:4px;">✕</span>
   </div>
 </div>
 
-<div id="app" style="display:none;">
-  <div class="header">
+<div id="appRoot">
+  <header class="header">
     <div>
-      <div style="display:flex;align-items:baseline;">
-        <span class="header-logo">Study Planner</span>
-        <span style="font-size:12px;color:var(--text3);margin-left:4px;">— by gandhi</span>
-      </div>
-      <div class="header-sub" id="headerSub">Overview</div>
+      <div class="header-logo">Study Planner Pro</div>
+      <div class="header-tag" id="headerTag">12th HSC Commerce & CA Foundation</div>
     </div>
     <div class="header-actions">
-      <div class="streak-pill" id="streakBadge" title="Current Daily Study Streak">🔥 0d</div>
-      <button class="btn-action-round" title="Backup & Restore Data" onclick="openModal('syncModal')">⚙️</button>
-      <button class="btn-action-round" title="Quick Add Target" onclick="openAddTargetModal('today')">+</button>
+      <div class="streak-badge" id="streakBadge" title="Consecutive active study days">🔥 0d</div>
+      <button class="btn-circle" title="Adjust Today's Time" onclick="openModal('adjustTimerModal')">⏱️</button>
+      <button class="btn-circle" title="Backup & Restore" onclick="openModal('syncModal')">⚙️</button>
+      <button class="btn-circle" title="Add Target" onclick="openTargetModal()">＋</button>
     </div>
-  </div>
+  </header>
 
-  <div id="tabOverview" class="page"></div>
-  <div id="tabPortions" style="display:none;" class="page"></div>
-  <div id="tabBacklog" style="display:none;" class="page"></div>
-  <div id="tabTests" style="display:none;" class="page"></div>
-  <div id="tabStats" style="display:none;" class="page"></div>
+  <main id="tabOverview" class="page"></main>
+  <main id="tabPortions" class="page" style="display:none;"></main>
+  <main id="tabBacklog" class="page" style="display:none;"></main>
+  <main id="tabTests" class="page" style="display:none;"></main>
+  <main id="tabStats" class="page" style="display:none;"></main>
 
-  <div class="bottom-nav">
-    <button class="nav-item active" id="navOv" onclick="switchTab('overview')"><span class="nav-icon">📊</span>Overview</button>
-    <button class="nav-item" id="navPo" onclick="switchTab('portions')"><span class="nav-icon">📋</span>Portions</button>
-    <button class="nav-item" id="navBl" onclick="switchTab('backlog')"><span class="nav-icon">🗂️</span>Backlog</button>
-    <button class="nav-item" id="navTe" onclick="switchTab('tests')"><span class="nav-icon">📝</span>Tests</button>
-    <button class="nav-item" id="navSt" onclick="switchTab('stats')"><span class="nav-icon">📈</span>Stats</button>
-  </div>
+  <nav class="bottom-nav">
+    <button class="nav-btn active" id="navBtn-overview" onclick="switchNav('overview')">
+      <svg viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
+      Dashboard
+    </button>
+    <button class="nav-btn" id="navBtn-portions" onclick="switchNav('portions')">
+      <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+      Portions
+    </button>
+    <button class="nav-btn" id="navBtn-backlog" onclick="switchNav('backlog')">
+      <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+      Backlog
+    </button>
+    <button class="nav-btn" id="navBtn-tests" onclick="switchNav('tests')">
+      <svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+      Tests
+    </button>
+    <button class="nav-btn" id="navBtn-stats" onclick="switchNav('stats')">
+      <svg viewBox="0 0 24 24"><path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/></svg>
+      Analytics
+    </button>
+  </nav>
 </div>
 
-<!-- MODAL: EXAM DATES -->
-<div class="modal-overlay" id="cdModal">
-  <div class="modal">
-    <h3>Set Target Exam Dates</h3>
-    <div class="field-gap">
-      <div class="field-label">12th Boards Exam Date</div>
-      <input class="input" type="date" id="cdBInput"/>
+<!-- MODAL: DATES CONFIG -->
+<div class="modal-backdrop" id="datesModal">
+  <div class="modal-box">
+    <div class="modal-title">Set Target Exam Dates</div>
+    <div class="modal-group">
+      <label class="modal-lbl">12th Boards Exam Date</label>
+      <input type="date" class="form-input" id="cfgBoardsDate"/>
     </div>
-    <div class="field-gap">
-      <div class="field-label">CA Foundation Exam Date</div>
-      <input class="input" type="date" id="cdCInput"/>
+    <div class="modal-group">
+      <label class="modal-lbl">CA Foundation Exam Date</label>
+      <input type="date" class="form-input" id="cfgCaDate"/>
     </div>
-    <div class="btn-row">
-      <button class="btn-secondary" onclick="closeModal('cdModal')">Cancel</button>
-      <button class="btn-primary" onclick="saveCDs()">Save Dates</button>
+    <div style="display:flex;gap:8px;margin-top:14px;">
+      <button class="btn btn-dark" style="flex:1" onclick="closeModal('datesModal')">Cancel</button>
+      <button class="btn btn-brand" style="flex:1" onclick="saveExamDates()">Save Dates</button>
     </div>
   </div>
 </div>
 
 <!-- MODAL: ADJUST TIMER -->
-<div class="modal-overlay" id="adjustTimerModal">
-  <div class="modal">
-    <h3>Adjust Today's Study Time</h3>
-    <p style="font-size:12px;color:var(--text3);margin-bottom:12px;">Forgot to start the stopwatch? Add or adjust hours and minutes logged for today directly.</p>
-    <div class="field-gap">
-      <div class="field-label">Minutes to Add (+ or -)</div>
-      <input class="input" type="number" id="adjustMinutesInput" placeholder="e.g. 45 or -15"/>
+<div class="modal-backdrop" id="adjustTimerModal">
+  <div class="modal-box">
+    <div class="modal-title">Manual Time Adjustment</div>
+    <p style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">Add or subtract minutes logged for offline sessions.</p>
+    <div class="modal-group">
+      <label class="modal-lbl">Minutes to add or subtract (+ / -)</label>
+      <input type="number" class="form-input" id="adjustMinutesInput" placeholder="e.g. 45 or -15"/>
     </div>
-    <div class="btn-row">
-      <button class="btn-secondary" onclick="closeModal('adjustTimerModal')">Cancel</button>
-      <button class="btn-primary" onclick="applyTimeAdjustment()">Apply Adjustment</button>
-    </div>
-  </div>
-</div>
-
-<!-- MODAL: BACKUP & DATA SYNC -->
-<div class="modal-overlay" id="syncModal">
-  <div class="modal">
-    <h3>Data Backup & Restore</h3>
-    <p style="font-size:12px;color:var(--text3);margin-bottom:12px;">Transfer your ticks, study timer log, and test scores between your phone and laptop seamlessly.</p>
-    <div class="field-gap">
-      <button class="btn-primary" onclick="exportJSONBackup()">💾 Download JSON Backup</button>
-    </div>
-    <div class="field-gap" style="margin-top:16px;">
-      <div class="field-label">Restore from JSON string</div>
-      <textarea class="input" id="restoreJsonInput" style="height:70px;font-family:monospace;font-size:11px;" placeholder="Paste JSON data here..."></textarea>
-      <button class="btn-secondary" style="margin-top:8px;" onclick="importJSONBackup()">📥 Restore Data</button>
-    </div>
-    <div class="btn-row">
-      <button class="btn-secondary" onclick="closeModal('syncModal')">Close</button>
+    <div style="display:flex;gap:8px;margin-top:14px;">
+      <button class="btn btn-dark" style="flex:1" onclick="closeModal('adjustTimerModal')">Cancel</button>
+      <button class="btn btn-brand" style="flex:1" onclick="applyTimeAdjustment()">Update Time</button>
     </div>
   </div>
 </div>
 
-<!-- MODAL: ADD DAILY OR MONTHLY TARGET (PORTION-LINKED) -->
-<div class="modal-overlay" id="addTargetModal">
-  <div class="modal">
-    <h3 id="targetModalTitle">Add Target</h3>
-    <input type="hidden" id="targetScope" value="today"/>
-    <div class="field-gap">
-      <div class="field-label">Target Source</div>
+<!-- MODAL: ADD TARGET -->
+<div class="modal-backdrop" id="targetModal">
+  <div class="modal-box">
+    <div class="modal-title">Schedule New Target</div>
+    <div class="modal-group">
+      <label class="modal-lbl">Target Scope</label>
+      <select class="form-input" id="tgtScope">
+        <option value="daily">Daily Target</option>
+        <option value="monthly">Monthly Priority</option>
+      </select>
+    </div>
+    <div class="modal-group">
+      <label class="modal-lbl">Creation Mode</label>
       <div style="display:flex;gap:8px;">
-        <button type="button" id="btnSrcPortion" class="btn-primary" style="flex:1;font-size:12px;" onclick="setTargetSourceMode('portion')">📋 From Portions</button>
-        <button type="button" id="btnSrcCustom" class="btn-secondary" style="flex:1;font-size:12px;" onclick="setTargetSourceMode('custom')">✏️ Custom Task</button>
+        <button type="button" id="btnModePortion" class="btn btn-brand" style="flex:1;font-size:12px;" onclick="setTargetCreationMode('portion')">📋 From Portion</button>
+        <button type="button" id="btnModeCustom" class="btn btn-dark" style="flex:1;font-size:12px;" onclick="setTargetCreationMode('custom')">✏️ Custom Task</button>
       </div>
     </div>
+
     <!-- PORTION SELECTOR -->
-    <div id="portionPickerBlock">
-      <div class="field-gap">
-        <div class="field-label">Stream</div>
-        <select class="input" id="pickStream" onchange="populatePickSubjects()">
+    <div id="portionSelectWrapper">
+      <div class="modal-group">
+        <label class="modal-lbl">Stream</label>
+        <select class="form-input" id="pickStream" onchange="populatePickSubjects()">
           <option value="boards_12th">12th Boards</option>
           <option value="cafc">CA Foundation</option>
         </select>
       </div>
-      <div class="field-gap">
-        <div class="field-label">Subject</div>
-        <sele
+      <div class="modal-group">
+        <label class="modal-lbl">Subject</label>
+        <select class="form-input" id="pickSubject" onchange="populatePickItems()"></select>
+      </div>
+      <div class="modal-group" id="pickChapterGroup">
+        <label class="modal-lbl" id="pickChapterLabel">Chapter</label>
+        <select class="form-input" id="pickChapter" onchange="populatePickUnits()"></select>
+      </div>
+      <div class="modal-group" id="pickUnitGroup" style="display:none;">
+        <label class="modal-lbl">Unit / Topic</label>
+        <select class="form-input" id="pickUnit"></select>
+      </div>
+    </div>
+
+    <!-- CUSTOM INPUT -->
+    <div id="customInputWrapper" style="display:none;">
+      <div class="modal-group">
+        <label class="modal-lbl">Category Tag</label>
+        <select class="form-input" id="tgtCustomStream">
+          <option value="12th">12th Boards</option>
+          <option value="cafc">CA Foundation</option>
+          <option value="general">General</option>
+        </select>
+      </div>
+      <div class="modal-group">
+        <label class="modal-lbl">Task Description</label>
+        <input type="text" class="form-input" id="tgtCustomText" placeholder="e.g. French Grammar: Pronoms Personnels Exercises"/>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:8px;margin-top:14px;">
+      <button class="btn btn-dark" style="flex:1" onclick="closeModal('targetModal')">Cancel</button>
+      <button class="btn btn-brand" style="flex:1" onclick="submitTarget()">Add Target</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: ADD TEST RECORD -->
+<div class="modal-backdrop" id="testModal">
+  <div class="modal-box">
+    <div class="modal-title">Log Test / Mock Result</div>
+    <div class="modal-group">
+      <label class="modal-lbl">Exam Category</label>
+      <select class="form-input" id="testStream">
+        <option value="12th">12th Boards</option>
+        <option value="cafc">CA Foundation</option>
+      </select>
+    </div>
+    <div class="modal-group">
+      <label class="modal-lbl">Subject / Chapter</label>
+      <input type="text" class="form-input" id="testSubject" placeholder="e.g. Maths 1 - Matrices & Differentiation Test"/>
+    </div>
+    <div style="display:flex;gap:10px;">
+      <div class="modal-group" style="flex:1;">
+        <label class="modal-lbl">Score Obtained</label>
+        <input type="number" class="form-input" id="testScore" placeholder="72"/>
+      </div>
+      <div class="modal-group" style="flex:1;">
+        <label class="modal-lbl">Total Marks</label>
+        <input type="number" class="form-input" id="testTotal" placeholder="80"/>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:14px;">
+      <button class="btn btn-dark" style="flex:1" onclick="closeModal('testModal')">Cancel</button>
+      <button class="btn btn-brand" style="flex:1" onclick="submitTestRecord()">Save Result</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: BACKUP & RESTORE -->
+<div class="modal-backdrop" id="syncModal">
+  <div class="modal-box">
+    <div class="modal-title">Backup & Synchronize</div>
+    <p style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">Sync your progress, test logs, and timer data across mobile and desktop devices without account logins.</p>
+    <div class="modal-group">
+      <button class="btn btn-brand btn-full" onclick="exportJSONBackup()">💾 Download JSON Backup</button>
+    </div>
+    <div class="modal-group" style="margin-top:14px;">
+      <label class="modal-lbl">Import / Restore JSON</label>
+      <textarea class="form-input" id="syncJsonInput" style="height:80px;font-family:monospace;font-size:11px;" placeholder="Paste JSON string here..."></textarea>
+      <button class="btn btn-dark btn-full" style="margin-top:8px;" onclick="importJSONBackup()">📥 Restore Data</button>
+    </div>
+    <div style="display:flex;margin-top:14px;">
+      <button class="btn btn-dark btn-full" onclick="closeModal('syncModal')">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- CELEBRATION OVERLAY -->
+<div id="celebration">
+  <div class="celeb-card">
+    <div style="font-size:38px;margin-bottom:8px;">🔥</div>
+    <div style="font-size:16px;font-weight:800;margin-bottom:4px;" id="celebTitle">Stage Completed!</div>
+    <div style="font-size:12px;color:var(--text-muted);margin-bottom:16px;" id="celebBody">Consistency compounds. Keep moving forward!</div>
+    <button class="btn btn-brand" style="width:100%;" onclick="dismissCelebration()">Keep Rolling</button>
+  </div>
+</div>
+
+<script>
+/* =========================================================================
+   REVERIFIED & EXHAUSTIVE PORTIONS
+   - 12th: Maharashtra State Board (Balbharati) HSC Commerce Official Syllabi
+   - CAFC: ICAI New Scheme (4 Papers: 100 Marks Each) Official Study Modules
+   ========================================================================= */
+const SYLLABUS_DEFAULT = {
+  boards_12th: [
+    {
+      id: "b_bk",
+      name: "Book-Keeping & Accountancy",
+      chapters: [
+        "1. Introduction to Partnership and Partnership Final Accounts",
+        "2. Accounts of 'Not for Profit' Concerns",
+        "3. Reconstitution of Partnership (Admission of Partner)",
+        "4. Reconstitution of Partnership (Retirement of Partner)",
+        "5. Reconstitution of Partnership (Death of Partner)",
+        "6. Dissolution of Partnership Firm",
+        "7. Bills of Exchange",
+        "8. Company Accounts: Issue of Shares",
+        "9. Analysis of Financial Statements",
+        "10. Computer in Accounting"
+      ]
+    },
+    {
+      id: "b_eco",
+      name: "Economics",
+      chapters: [
+        "1. Introduction to Micro and Macro Economics",
+        "2. Utility Analysis",
+        "3A. Demand Analysis",
+        "3B. Elasticity of Demand",
+        "4. Supply Analysis",
+        "5. Forms of Market",
+        "6. Index Numbers",
+        "7. National Income",
+        "8. Public Finance in India",
+        "9. Money Market and Capital Market in India",
+        "10. Foreign Trade of India"
+      ]
+    },
+    {
+      id: "b_ocm",
+      name: "Organisation of Commerce & Management",
+      chapters: [
+        "1. Principles of Management",
+        "2. Functions of Management",
+        "3. Entrepreneurship Development",
+        "4. Business Services",
+        "5. Emerging Modes of Business",
+        "6. Social Responsibilities of Business",
+        "7. Consumer Protection",
+        "8. Marketing"
+      ]
+    },
+    {
+      id: "b_math1",
+      name: "Mathematics & Statistics (Part 1)",
+      chapters: [
+        "1. Mathematical Logic",
+        "2. Matrices",
+        "3. Differentiation",
+        "4. Applications of Derivatives",
+        "5. Integration",
+        "6. Definite Integration",
+        "7. Applications of Definite Integration",
+        "8. Differential Equations and Applications"
+      ]
+    },
+    {
+      id: "b_math2",
+      name: "Mathematics & Statistics (Part 2)",
+      chapters: [
+        "1. Commission, Brokerage and Discount",
+        "2. Insurance and Annuity",
+        "3. Linear Regression",
+        "4. Time Series and Bivariate Data",
+        "5. Index Numbers",
+        "6. Linear Programming Problems (LPP)",
+        "7. Assignment Problem and Sequencing",
+        "8. Probability Distributions",
+        "9. Binomial Distribution"
+      ]
+    },
+    {
+      id: "b_eng",
+      name: "English (Yuvakbharati)",
+      chapters: [
+        "1.1 An Astrologer's Day (R. K. Narayan)",
+        "1.2 On Saying 'Please' (A. G. Gardiner)",
+        "1.3 The Cop and the Anthem (O. Henry)",
+        "1.4 Big Data-Big Insights",
+        "1.5 The New Dress (Virginia Woolf)",
+        "1.6 Into the Wild (Kiran Purandare)",
+        "1.7 Why We Travel (Pico Iyer)",
+        "1.8 Voyaging Towards Excellence (Achyut Godbole)",
+        "2.1 Song of the Open Road (Walt Whitman)",
+        "2.2 Indian Weavers (Sarojini Naidu)",
+        "2.3 The Inchcape Rock (Robert Southey)",
+        "2.4 Have You Earned Your Tomorrow (Edgar Guest)",
+        "2.5 Father Returning Home (Dilip Chitre)",
+        "2.6 Money (William H. Davies)",
+        "2.7 She Walks in Beauty (Lord Byron)",
+        "2.8 Small Towns and Rivers (Mamang Dai)",
+        "3.1 Summary Writing",
+        "3.2 Do Schools Really Kill Creativity? (Mind Mapping)",
+        "3.3 Note-Making",
+        "3.4 Statement of Purpose (SOP)",
+        "3.5 Drafting a Virtual Message",
+        "3.6 Group Discussion",
+        "4.1 History of English Novel",
+        "4.2 To Sir, with Love (E. R. Braithwaite)",
+        "4.3 Around the World in Eighty Days (Jules Verne)",
+        "4.4 The Sign of Four (Sir Arthur Conan Doyle)"
+      ]
+    },
+    {
+      id: "b_french",
+      name: "French (Français)",
+      chapters: [
+        "Leçon 1: De la musique avant toute chose",
+        "Leçon 2: Tous ensemble!",
+        "Leçon 3: Au travail!",
+        "Leçon 4: Qu'on est bien chez soi!",
+        "Leçon 5: Bon voyage!",
+        "Grammaire: Les Pronoms Personnels (COD, COI, Y, EN)",
+        "Grammaire: Les Temps du Passé (Passé Composé, Imparfait, Plus-que-parfait)",
+        "Grammaire: Le Futur Simple et le Futur Antérieur",
+        "Grammaire: Le Conditionnel (Présent et Passé)",
+        "Grammaire: Le Subjonctif Présent",
+        "Grammaire: La Voix Passive et le Discours Rapporté",
+        "Civilisation: La France, sa géographie, sa gastronomie et sa culture",
+        "Expression Écrite: Rédaction d'une lettre formelle/informelle",
+        "Expression Écrite: Rédaction d'un courriel et d'un dialogue"
+      ]
+    }
+  ],
+  cafc: [
+    {
+      id: "ca_p1",
+      name: "Paper 1: Accounting (100 Marks)",
+      chapters: [
+        {
+          id: "p1_c1",
+          name: "Ch 1: Theoretical Framework",
+          units: [
+            "Unit 1: Meaning and Scope of Accounting",
+            "Unit 2: Accounting Concepts, Principles & Conventions",
+            "Unit 3: Accounting Terminology - Glossary",
+            "Unit 4: Capital and Revenue Expenditures & Receipts",
+            "Unit 5: Contingent Assets and Contingent Liabilities",
+            "Unit 6: Accounting Policies",
+            "Unit 7: Accounting as a Measurement Discipline (Valuation Principles)",
+            "Unit 8: Accounting Standards & Ind AS/IFRS Overview"
+          ]
+        },
+        {
+          id: "p1_c2",
+          name: "Ch 2: Accounting Process",
+          units: [
+            "Unit 1: Books of Prime Entry, Journal and Ledger",
+            "Unit 2: Cash Book and Subsidiary Books",
+            "Unit 3: Trial Balance Preparation & Verification",
+            "Unit 4: Rectification of Errors (Suspense Account)"
+          ]
+        },
+        {
+          id: "p1_c3",
+          name: "Ch 3: Bank Reconciliation Statement",
+          units: [
+            "Unit 1: Causes of Differences between Cash Book & Pass Book",
+            "Unit 2: Preparation of BRS with & without Adjusted Cash Book"
+          ]
+        },
+        {
+          id: "p1_c4",
+          name: "Ch 4: Inventories",
+          units: [
+            "Unit 1: Meaning, Basis & Methods of Inventory Valuation (FIFO, WAC)",
+            "Unit 2: Net Realisable Value (NRV) & Inventory Taking/Adjustments"
+          ]
+        },
+        {
+          id: "p1_c5",
+          name: "Ch 5: Depreciation and Amortisation",
+          units: [
+            "Unit 1: Concepts, Factors & Methods (SLM & WDV)",
+            "Unit 2: Change in Method, Sale of Asset & Provision for Depreciation"
+          ]
+        },
+        {
+          id: "p1_c6",
+          name: "Ch 6: Bills of Exchange & Promissory Notes",
+          units: [
+            "Unit 1: Drawing, Acceptance, Endorsement & Discounting",
+            "Unit 2: Dishonour, Noting Charges, Renewal & Accommodation Bills"
+          ]
+        },
+        {
+          id: "p1_c7",
+          name: "Ch 7: Preparation of Final Accounts of Sole Proprietors",
+          units: [
+            "Unit 1: Trading & Profit and Loss Account Preparation",
+            "Unit 2: Balance Sheet with Closing & Comprehensive Year-End Adjustments"
+          ]
+        },
+        {
+          id: "p1_c8",
+          name: "Ch 8: Financial Statements of Not-for-Profit Organisations",
+          units: [
+            "Unit 1: Receipts and Payments Account Analysis",
+            "Unit 2: Income and Expenditure Account & Balance Sheet Preparation"
+          ]
+        },
+        {
+          id: "p1_c9",
+          name: "Ch 9: Accounts from Incomplete Records (Single Entry)",
+          units: [
+            "Unit 1: Statement of Affairs Method (Capital Comparison)",
+            "Unit 2: Conversion into Double Entry System"
+          ]
+        },
+        {
+          id: "p1_c10",
+          name: "Ch 10: Partnership and LLP Accounts",
+          units: [
+            "Unit 1: Partnership Fundamentals & P&L Appropriation",
+            "Unit 2: Goodwill Valuation & Accounting Treatment",
+            "Unit 3: Admission of a Partner (Revaluation, Capital Adjustments)",
+            "Unit 4: Retirement and Death of a Partner (JLP, Settlement)",
+            "Unit 5: Dissolution of Partnership Firm & Insolvency of Partners"
+          ]
+        },
+        {
+          id: "p1_c11",
+          name: "Ch 11: Company Accounts",
+          units: [
+            "Unit 1: Issue, Forfeiture & Re-issue of Shares (Pro-rata Allotment)",
+            "Unit 2: Issue of Bonus Shares and Right Shares",
+            "Unit 3: Issue and Terms of Redemption of Debentures"
+          ]
+        }
+      ]
+    },
+    {
+      id: "ca_p2",
+      name: "Paper 2: Business Laws (100 Marks)",
+      chapters: [
+        {
+          id: "p2_c1",
+          name: "Ch 1: Indian Regulatory Framework",
+          units: [
+            "Unit 1: Sources of Law, Hierarchy of Courts & Legislative Process in India"
+          ]
+        },
+        {
+          id: "p2_c2",
+          name: "Ch 2: The Indian Contract Act, 1872",
+          units: [
+            "Unit 1: Nature of Contracts & Essentials of Valid Offer and Acceptance",
+            "Unit 2: Consideration, Legal Rules & Doctrine of Privity of Contract",
+            "Unit 3: Capacity to Contract, Free Consent & Legality of Object",
+            "Unit 4: Void Agreements & Performance of Contract",
+            "Unit 5: Discharge and Breach of Contract and its Remedies",
+            "Unit 6: Contingent Contracts and Quasi Contracts",
+            "Unit 7: Contract of Indemnity and Guarantee (Sec 124-147)",
+            "Unit 8: Bailment and Pledge (Sec 148-181)",
+            "Unit 9: Contract of Agency (Sec 182-238)"
+          ]
+        },
+        {
+          id: "p2_c3",
+          name: "Ch 3: The Sale of Goods Act, 1930",
+          units: [
+            "Unit 1: Formation of Contract of Sale & Goods Classification",
+            "Unit 2: Conditions and Warranties & Doctrine of Caveat Emptor",
+            "Unit 3: Transfer of Property, Passing of Risk & Nemo Dat Quod Non Habet",
+            "Unit 4: Unpaid Seller, Rights Against Goods & Remedies for Breach"
+          ]
+        },
+        {
+          id: "p2_c4",
+          name: "Ch 4: The Indian Partnership Act, 1932",
+          units: [
+            "Unit 1: General Nature of Partnership & True Test of Partnership",
+            "Unit 2: Relations of Partners (Inter-se & with Third Parties, Implied Authority)",
+            "Unit 3: Registration of Firms, Consequences of Non-Registration & Dissolution"
+          ]
+        },
+        {
+          id: "p2_c5",
+          name: "Ch 5: The Limited Liability Partnership Act, 2008",
+          units: [
+            "Unit 1: Concept, Salient Features & Differences with Partnership/Company",
+            "Unit 2: Incorporation Process, Designated Partners & Annual Compliances"
+          ]
+        },
+        {
+          id: "p2_c6",
+          name: "Ch 6: The Companies Act, 2013",
+          units: [
+            "Unit 1: Meaning, Characteristics & Lifting of Corporate Veil",
+            "Unit 2: Classification of Companies (OPC, Small, Private, Public, Sec 8)",
+            "Unit 3: Incorporation of Company, MOA, AOA & Doctrine of Ultra Vires/Indoor Management"
+          ]
+        },
+        {
+          id: "p2_c7",
+          name: "Ch 7: The Negotiable Instruments Act, 1881",
+          units: [
+            "Unit 1: Meaning, Characteristics of Promissory Note, Bill of Exchange & Cheque",
+            "Unit 2: Holder, Holder in Due Course, Negotiation, Endorsement & Crossing",
+            "Unit 3: Dishonour of Cheque for Insufficiency of Funds (Section 138-142)"
+          ]
+        }
+      ]
+    },
+    {
+      id: "ca_p3",
+      name: "Paper 3: Quantitative Aptitude (100 Marks)",
+      chapters: [
+        {
+          id: "p3_c1",
+          name: "Part A: Business Mathematics (40 Marks)",
+          units: [
+            "Unit 1: Ratio, Proportion, Indices and Logarithms",
+            "Unit 2: Equations (Linear, Quadratic, Cubic & Matrices)",
+            "Unit 3: Linear Inequalities with Objective Functions",
+            "Unit 4: Mathematics of Finance (Simple/Compound Interest, Effective Rate, Annuity, Perpetuity, Sinking Fund)",
+            "Unit 5: Permutations and Combinations (Principles of Counting, Factorials)",
+            "Unit 6: Sequence and Series (Arithmetic and Geometric Progressions)",
+            "Unit 7: Sets, Relations and Functions",
+            "Unit 8: Basic Applications of Differential and Integral Calculus"
+          ]
+        },
+        {
+          id: "p3_c2",
+          name: "Part B: Logical Reasoning (20 Marks)",
+          units: [
+            "Unit 1: Number Series, Coding and Decoding & Odd Man Out",
+            "Unit 2: Direction Tests",
+            "Unit 3: Seating Arrangements (Linear & Circular Arrangements)",
+            "Unit 4: Blood Relations"
+          ]
+        },
+        {
+          id: "p3_c3",
+          name: "Part C: Statistics (40 Marks)",
+          units: [
+            "Unit 1: Statistical Representation of Data (Sampling, Frequency Distribution, Graphical Display)",
+            "Unit 2: Measures of Central Tendency (Mean, Median, Mode, Geometric & Harmonic Mean)",
+            "Unit 3: Measures of Dispersion (Range, QD, MD, Standard Deviation, Coefficient of Variation)",
+            "Unit 4: Probability and Expected Value (Addition & Multiplication Theorems, Bayes Theorem)",
+            "Unit 5: Theoretical Distributions (Binomial, Poisson & Normal Distribution)",
+            "Unit 6: Correlation and Regression Analysis (Karl Pearson, Spearman Rank, Regression Lines)",
+            "Unit 7: Index Numbers (Laspeyres, Paasche, Fisher's Ideal Index, Cost of Living Index)"
+          ]
+        }
+      ]
+    },
+    {
+      id: "ca_p4",
+      name: "Paper 4: Business Economics (100 Marks)",
+      chapters: [
+        {
+          id: "p4_c1",
+          name: "Ch 1: Introduction to Business Economics",
+          units: [
+            "Unit 1: Meaning, Scope & Nature of Business Economics (Micro vs Macro)",
+            "Unit 2: Basic Economic Problems & Role of Price Mechanism in Different Economies"
+          ]
+        },
+        {
+          id: "p4_c2",
+          name: "Ch 2: Theory of Demand and Supply",
+          units: [
+            "Unit 1: Law of Demand, Elasticity of Demand (Price, Income, Cross) & Forecasting",
+            "Unit 2: Consumer Behaviour (Marginal Utility Analysis & Indifference Curve Approach)",
+            "Unit 3: Theory of Supply, Law of Supply & Elasticity of Supply",
+            "Unit 4: Market Equilibrium and Determination of Equilibrium Price"
+          ]
+        },
+        {
+          id: "p4_c3",
+          name: "Ch 3: Theory of Production and Cost",
+          units: [
+            "Unit 1: Theory of Production (Total, Average, Marginal Product, Laws of Returns, Isoquants)",
+            "Unit 2: Theory of Cost (Short Run & Long Run Cost Curves, Economies of Scale)"
+          ]
+        },
+        {
+          id: "p4_c4",
+          name: "Ch 4: Price Determination in Different Markets",
+          units: [
+            "Unit 1: Meaning & Classification of Market Structures",
+            "Unit 2: Perfect Competition: Short Run and Long Run Equilibrium",
+            "Unit 3: Monopoly: Equilibrium, Price Discrimination & Deadweight Loss",
+            "Unit 4: Monopolistic Competition and Oligopoly (Kinked Demand Curve, Cartels)"
+          ]
+        },
+        {
+          id: "p4_c5",
+          name: "Ch 5: Determination of National Income",
+          units: [
+            "Unit 1: National Income Aggregates (GDP, GNP, NNP) & Measurement Methods",
+            "Unit 2: Keynesian Two, Three and Four Sector Models of Income Determination"
+          ]
+        },
+        {
+          id: "p4_c6",
+          name: "Ch 6: Public Finance",
+          units: [
+            "Unit 1: Fiscal Functions: Allocation, Redistribution and Stabilization",
+            "Unit 2: Market Failure: Public Goods, Externalities, Asymmetric Information",
+            "Unit 3: Fiscal Policy: Government Budget, Fiscal Instruments & Deficit Financing"
+          ]
+        },
+        {
+          id: "p4_c7",
+          name: "Ch 7: Money Market & Monetary Policy",
+          units: [
+            "Unit 1: Demand for and Supply of Money (Credit Creation by Banking System)",
+            "Unit 2: Monetary Policy: Objectives, Quantitative & Qualitative Instruments (Repo, CRR, SLR)"
+          ]
+        },
+        {
+          id: "p4_c8",
+          name: "Ch 8: International Trade",
+          units: [
+            "Unit 1: Theories of International Trade (Absolute & Comparative Advantage)",
+            "Unit 2: Trade Policies: Tariffs and Non-Tariff Barriers",
+            "Unit 3: Exchange Rates: Determination, Regimes & Foreign Direct Investment (FDI/FII)"
+          ]
+        },
+        {
+          id: "p4_c9",
+          name: "Ch 9: Indian Economy",
+          units: [
+            "Unit 1: Evolution of Indian Economy, Structural Reforms 1991 & Contemporary Trends"
+          ]
+        }
+      ]
+    }
+  ]
+};
+
+/* =========================================================================
+   APPLICATION STATE & PERSISTENCE
+   ========================================================================= */
+const DB_KEY = "STUDY_PLANNER_PRO_STATE_V5";
+
+let STATE = {
+  examDates: {
+    boards: "2027-02-15",
+    ca: "2027-06-20"
+  },
+  ticks: {},      // Format: { [key]: stageNumber (1 to 5) }
+  targets: [],    // Array of { id, text, stream, scope, done }
+  backlog: [],    // Array of { id, text, priority, created }
+  tests: [],      // Array of { id, stream, subject, score, total, date }
+  studySeconds: 0,
+  streak: 1,
+  lastStudyDate: new Date().toISOString().slice(0, 10)
+};
+
+function loadState() {
+  const saved = localStorage.getItem(DB_KEY);
+  if (saved) {
+    try {
+      STATE = { ...STATE, ...JSON.parse(saved) };
+    } catch (e) {
+      console.error("State recovery failed", e);
+    }
+  }
+  updateStreakEngine();
+}
+
+function saveState() {
+  localStorage.setItem(DB_KEY, JSON.stringify(STATE));
+}
+
+function updateStreakEngine() {
+  const today = new Date().toISOString().slice(0, 10);
+  if (STATE.lastStudyDate !== today) {
+    const last = new Date(STATE.lastStudyDate);
+    const now = new Date(today);
+    const diffDays = Math.round((now - last) / (1000 * 3600 * 24));
+    if (diffDays === 1) {
+      // Streak maintained
+    } else if (diffDays > 1) {
+      STATE.streak = 1;
+    }
+  }
+  document.getElementById("streakBadge").innerHTML = `🔥 ${STATE.streak}d`;
+}
+
+/* =========================================================================
+   KEY GENERATION & TICK LOGIC
+   ========================================================================= */
+function getItemKey(stream, subId, p1, p2) {
+  if (stream === 'boards_12th') {
+    return `${stream}_${subId}_${p1}`; // p1 is chapterIndex
+  } else {
+    return `${stream}_${subId}_${p1}_${p2}`; // p1 is chpId, p2 is unitIndex
+  }
+}
+
+function handleTickClick(key, stageClicked) {
+  const current = STATE.ticks[key] || 0;
+
+  if (current === stageClicked) {
+    STATE.ticks[key] = stageClicked - 1;
+  } else {
+    STATE.ticks[key] = stageClicked;
+    triggerCelebration(stageClicked);
+  }
+
+  saveState();
+  renderPortionsPage();
+  renderOverviewPage();
+}
+
+function triggerCelebration(stage) {
+  const titles = ["", "Lecture Completed!", "Self Study Finished!", "Revision 1 Done!", "Revision 2 Perfected!", "Mastery Reached! 🌟"];
+  const subs = [
+    "",
+    "Solid start! Consolidate notes and write out formula cards.",
+    "Concept internalized! Keep this momentum.",
+    "First active recall cycle secured.",
+    "Exam-level retention reinforced.",
+    "Flawless mastery. Top percentile standard!"
+  ];
+  document.getElementById("celebTitle").innerText = titles[stage] || "Progress Logged!";
+  document.getElementById("celebBody").innerText = subs[stage] || "Every step forward compounds.";
+  document.getElementById("celebration").classList.add("active");
+}
+
+function dismissCelebration() {
+  document.getElementById("celebration").classList.remove("active");
+}
+
+/* =========================================================================
+   NAVIGATION CONTROLLER
+   ========================================================================= */
+let currentNav = 'overview';
+let portionStreamView = 'boards_12th';
+
+function switchNav(nav) {
+  currentNav = nav;
+  document.querySelectorAll(".nav-btn").forEach(btn => btn.classList.remove("active"));
+  const activeBtn = document.getElementById(`navBtn-${nav}`);
+  if (activeBtn) activeBtn.classList.add("active");
+
+  const pages = ["overview", "portions", "backlog", "tests", "stats"];
+  pages.forEach(p => {
+    const el = document.getElementById(`tab${capitalize(p)}`);
+    if (el) el.style.display = (p === nav) ? 'block' : 'none';
+  });
+
+  if (nav === 'overview') renderOverviewPage();
+  if (nav === 'portions') renderPortionsPage();
+  if (nav === 'backlog') renderBacklogPage();
+  if (nav === 'tests') renderTestsPage();
+  if (nav === 'stats') renderStatsPage();
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function capitalize(s) {
+  return s.charAt(0).toUpperCase() + s.slice(1);
+}
+
+/* =========================================================================
+   VIEW: OVERVIEW (DASHBOARD)
+   ========================================================================= */
+function getDaysRemaining(dateStr) {
+  if (!dateStr) return 0;
+  const target = new Date(dateStr + "T00:00:00");
+  const now = new Date();
+  const diff = target - now;
+  return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
+}
+
+function calculateProgress(stream) {
+  const subjects = SYLLABUS_DEFAULT[stream];
+  let totalPoints = 0;
+  let earnedPoints = 0;
+
+  subjects.forEach(sub => {
+    if (stream === 'boards_12th') {
+      sub.chapters.forEach((ch, idx) => {
+        const key = getItemKey(stream, sub.id, idx);
+        earnedPoints += (STATE.ticks[key] || 0);
+        totalPoints += 5;
+      });
+    } else {
+      sub.chapters.forEach(chp => {
+        chp.units.forEach((u, uIdx) => {
+          const key = getItemKey(stream, sub.id, chp.id, uIdx);
+          earnedPoints += (STATE.ticks[key] || 0);
+          totalPoints += 5;
+        });
+      });
+    }
+  });
+
+  return totalPoints === 0 ? 0 : Math.round((earnedPoints / totalPoints) * 100);
+}
+
+function renderOverviewPage() {
+  const bDays = getDaysRemaining(STATE.examDates.boards);
+  const cDays = getDaysRemaining(STATE.examDates.ca);
+  const bPct = calculateProgress('boards_12th');
+  const cPct = calculateProgress('cafc');
+
+  const container = document.getElementById("tabOverview");
+  container.innerHTML = `
+    <!-- COUNTDOWN WIDGET -->
+    <div class="countdown-grid">
+      <div class="cd-card boards" onclick="openModal('datesModal')">
+        <div class="cd-days">${bDays}</div>
+        <div class="cd-label" style="color:var(--boards-accent)">12th Boards</div>
+        <div class="cd-sub">${STATE.examDates.boards || 'Set Date'}</div>
+      </div>
+      <div class="cd-card ca" onclick="openModal('datesModal')">
+        <div class="cd-days">${cDays}</div>
+        <div class="cd-label" style="color:var(--ca-accent)">CA Foundation</div>
+        <div class="cd-sub">${STATE.examDates.ca || 'Set Date'}</div>
+      </div>
+    </div>
+
+    <!-- CURRICULUM OVERVIEW -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">Curriculum Progress</span>
+        <button class="tag" style="background:var(--surface-elevated);border:1px solid var(--surface-border);color:var(--text-muted);" onclick="switchNav('portions')">Manage All ➔</button>
+      </div>
+
+      <div>
+        <div style="display:flex;justify-content:space-between;font-size:12px;font-weight:700;margin-bottom:2px;">
+          <span>12th HSC Commerce</span>
+          <span style="color:var(--boards-accent);">${bPct}%</span>
+        </div>
+        <div class="prog-track">
+          <div class="prog-bar fill-boards" style="width: ${bPct}%;"></div>
+        </div>
+      </div>
+
+      <div style="margin-top:14px;">
+        <div style="display:flex;justify-content:space-between;font-size:12px;font-weight:700;margin-bottom:2px;">
+          <span>CA Foundation</span>
+          <span style="color:var(--ca-accent);">${cPct}%</span>
+        </div>
+        <div class="prog-track">
+          <div class="prog-bar fill-ca" style="width: ${cPct}%;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STOPWATCH -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">Daily Focus Stopwatch</span>
+        <span class="tag tag-boards">Deep Work</span>
+      </div>
+      <div class="timer-display" id="stopwatchDisplay">${formatTime(timerSeconds)}</div>
+      <div class="timer-controls">
+        <button class="btn btn-brand" id="btnTimerToggle" onclick="toggleTimer()">
+          ${isTimerRunning ? 'Pause Session' : 'Start Focus'}
+        </button>
+        <button class="btn btn-dark" onclick="resetTimer()">Reset</button>
+        <button class="btn btn-dark" onclick="openModal('adjustTimerModal')">± Adjust</button>
+      </div>
+    </div>
+
+    <!-- DAILY TARGETS -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">Today's Checkpoints</span>
+        <button class="tag" style="background:var(--surface-elevated);border:1px solid var(--surface-border);color:var(--text-muted);" onclick="openTargetModal('daily')">＋ Add</button>
+      </div>
+      <div id="overviewTargetsList">
+        ${renderTargetsHTML('daily')}
+      </div>
+    </div>
+
+    <!-- MONTHLY PRIORITIES -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">Monthly Priority Milestones</span>
+        <button class="tag" style="background:var(--surface-elevated);border:1px solid var(--surface-border);color:var(--text-muted);" onclick="openTargetModal('monthly')">＋ Add</button>
+      </div>
+      <div id="monthlyTargetsList">
+        ${renderTargetsHTML('monthly')}
+      </div>
+    </div>
+  `;
+}
+
+/* =========================================================================
+   VIEW: PORTIONS (12th Direct Chapters & CAFC Chapter -> Unit Drill Down)
+   ========================================================================= */
+let expandedSubs = {};
+let expandedChps = {};
+
+function toggleSubAccordion(subId) {
+  expandedSubs[subId] = !expandedSubs[subId];
+  renderPortionsPage();
+}
+
+function toggleChpAccordion(chpId) {
+  expandedChps[chpId] = !expandedChps[chpId];
+  renderPortionsPage();
+}
+
+function setPortionStream(stream) {
+  portionStreamView = stream;
+  renderPortionsPage();
+}
+
+function renderPortionsPage() {
+  const container = document.getElementById("tabPortions");
+  const subjects = SYLLABUS_DEFAULT[portionStreamView];
+  const isBoards = portionStreamView === 'boards_12th';
+
+  let html = `
+    <!-- STREAM SELECTOR -->
+    <div class="segmented">
+      <button class="segmented-btn ${isBoards ? 'active boards' : ''}" onclick="setPortionStream('boards_12th')">12th Boards</button>
+      <button class="segmented-btn ${!isBoards ? 'active ca' : ''}" onclick="setPortionStream('cafc')">CA Foundation</button>
+    </div>
+
+    <div style="font-size:11px;color:var(--text-dim);margin-bottom:8px;padding:0 2px;">
+      ${isBoards ? 'HSC Balbharati Chapters.' : 'ICAI Study Modules (Click chapters to view units).'} Stages: <b>1</b>:Lecture • <b>2</b>:Self • <b>3</b>:Rev 1 • <b>4</b>:Rev 2 • <b>5</b>:Mastered
+    </div>
+  `;
+
+  subjects.forEach(sub => {
+    let subEarned = 0;
+    let subTotal = 0;
+
+    if (isBoards) {
+      sub.chapters.forEach((ch, idx) => {
+        const key = getItemKey('boards_12th', sub.id, idx);
+        subEarned += (STATE.ticks[key] || 0);
+        subTotal += 5;
+      });
+    } else {
+      sub.chapters.forEach(chp => {
+        chp.units.forEach((u, uIdx) => {
+          const key = getItemKey('cafc', sub.id, chp.id, uIdx);
+          subEarned += (STATE.ticks[key] || 0);
+          subTotal += 5;
+        });
+      });
+    }
+
+    const subPct = subTotal > 0 ? Math.round((subEarned / subTotal) * 100) : 0;
+    const isSubOpen = expandedSubs[sub.id] !== false; // open by default
+
+    html += `
+      <div class="sub-card">
+        <div class="sub-header" onclick="toggleSubAccordion('${sub.id}')">
+          <div class="sub-info">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+              <span class="sub-title">${sub.name}</span>
+              <span class="sub-pct" style="color:${isBoards ? 'var(--boards-accent)' : 'var(--ca-accent)'}">${subPct}%</span>
+            </div>
+            <div class="prog-track" style="margin:0;">
+              <div class="prog-bar ${isBoards ? 'fill-boards' : 'fill-ca'}" style="width:${subPct}%"></div>
+            </div>
+          </div>
+          <div style="font-size:14px;color:var(--text-dim);transform:rotate(${isSubOpen ? '90deg' : '0deg'});transition:transform 0.2s;">›</div>
+        </div>
+
+        ${isSubOpen ? `
+          <div class="sub-content">
+            ${isBoards ? 
+              // 12TH: DIRECT BALBHARATI CHAPTERS
+              sub.chapters.map((chName, chIdx) => {
+                const key = getItemKey('boards_12th', sub.id, chIdx);
+                const currentStage = STATE.ticks[key] || 0;
+                return `
+                  <div class="item-card">
+                    <div class="item-name">${chName}</div>
+                    <div class="tick-strip">
+                      ${[1,2,3,4,5].map(st => `
+                        <div class="tick-box ${currentStage >= st ? 'done-' + st : ''}"
+                             onclick="handleTickClick('${key}', ${st})"
+                             title="Stage ${st}">
+                          ${st}
+                        </div>
+                      `).join('')}
+                    </div>
+                  </div>
+                `;
+              }).join('')
+              :
+              // CAFC: HIERARCHICAL CHAPTER -> UNITS
+              sub.chapters.map(chp => {
+                let chpEarned = 0;
+                let chpTotal = chp.units.length * 5;
+                chp.units.forEach((u, uIdx) => {
+                  const key = getItemKey('cafc', sub.id, chp.id, uIdx);
+                  chpEarned += (STATE.ticks[key] || 0);
+                });
+                const chpPct = chpTotal > 0 ? Math.round((chpEarned / chpTotal) * 100) : 0;
+                const isChpOpen = !!expandedChps[chp.id];
+
+                return `
+                  <div class="chp-card">
+                    <div class="chp-header" onclick="toggleChpAccordion('${chp.id}')">
+                      <div class="chp-title">${chp.name}</div>
+                      <div style="display:flex;align-items:center;">
+                        <span class="chp-pct" style="color:var(--ca-accent)">${chpPct}%</span>
+                        <span style="font-size:12px;color:var(--text-dim);transform:rotate(${isChpOpen ? '90deg' : '0deg'});transition:transform 0.2s;">›</span>
+                      </div>
+                    </div>
+
+                    ${isChpOpen ? `
+                      <div class="units-list">
+                        ${chp.units.map((unitName, uIdx) => {
+                          const key = getItemKey('cafc', sub.id, chp.id, uIdx);
+                          const currentStage = STATE.ticks[key] || 0;
+                          return `
+                            <div class="item-card">
+                              <div class="item-name" style="color:var(--text-muted);">${unitName}</div>
+                              <div class="tick-strip">
+                                ${[1,2,3,4,5].map(st => `
+                                  <div class="tick-box ${currentStage >= st ? 'done-' + st : ''}"
+                                       onclick="handleTickClick('${key}', ${st})"
+                                       title="Stage ${st}">
+                                    ${st}
+                                  </div>
+                                `).join('')}
+                              </div>
+                            </div>
+                          `;
+                        }).join('')}
+                      </div>
+                    ` : ''}
+                  </div>
+                `;
+              }).join('')
+            }
+          </div>
+        ` : ''}
+      </div>
+    `;
+  });
+
+  container.innerHTML = html;
+}
+
+/* =========================================================================
+   VIEW: BACKLOG MANAGER
+   ========================================================================= */
+function renderBacklogPage() {
+  const container = document.getElementById("tabBacklog");
+  container.innerHTML = `
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">Backlog Queue</span>
+        <button class="tag tag-high">${STATE.backlog.length} Pending</button>
+      </div>
+      <div style="display:flex;gap:6px;margin-bottom:12px;">
+        <input type="text" class="form-input" id="newBacklogText" placeholder="Missed lecture, exercise backlog, or theory topic..."/>
+        <select class="form-input" id="newBacklogPri" style="width:110px;">
+          <option value="high">High</option>
+          <option value="med" selected>Medium</option>
+          <option value="low">Low</option>
+        </select>
+        <button class="btn btn-brand" onclick="addBacklogItem()">Add</button>
+      </div>
+
+      <div id="backlogList">
+        ${STATE.backlog.length === 0 ? '<div style="font-size:12px;color:var(--text-dim);text-align:center;padding:16px;">Zero backlogs! Everything is up to date.</div>' : ''}
+        ${STATE.backlog.map((item, idx) => `
+          <div class="target-item">
+            <div class="tag tag-${item.priority}">${item.priority}</div>
+            <div class="target-label" style="margin-left:6px;">${item.text}</div>
+            <button class="btn btn-dark" style="padding:4px 8px;font-size:11px;" onclick="convertBacklogToTarget(${idx})">➔ Today</button>
+            <button class="target-delete" onclick="removeBacklogItem(${idx})">✕</button>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function addBacklogItem() {
+  const txt = document.getElementById("newBacklogText").value.trim();
+  const pri = document.getElementById("newBacklogPri").value;
+  if (!txt) return;
+  STATE.backlog.push({ text: txt, priority: pri, created: Date.now() });
+  saveState();
+  renderBacklogPage();
+}
+
+function removeBacklogItem(idx) {
+  STATE.backlog.splice(idx, 1);
+  saveState();
+  renderBacklogPage();
+}
+
+function convertBacklogToTarget(idx) {
+  const item = STATE.backlog[idx];
+  STATE.targets.push({
+    id: Date.now(),
+    text: `[Backlog] ${item.text}`,
+    stream: 'general',
+    scope: 'daily',
+    done: false
+  });
+  STATE.backlog.splice(idx, 1);
+  saveState();
+  renderBacklogPage();
+}
+
+/* =========================================================================
+   VIEW: TESTS & MOCK TRACKER
+   ========================================================================= */
+function renderTestsPage() {
+  const container = document.getElementById("tabTests");
+
+  let totalScored = 0;
+  let totalMax = 0;
+  STATE.tests.forEach(t => {
+    totalScored += Number(t.score);
+    totalMax += Number(t.total);
+  });
+  const overallAvg = totalMax > 0 ? Math.round((totalScored / totalMax) * 100) : 0;
+
+  container.innerHTML = `
+    <div class="analytics-banner">
+      <div class="stat-card">
+        <div class="stat-val" style="color:var(--boards-accent);">${STATE.tests.length}</div>
+        <div class="stat-lbl">Tests Taken</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val" style="color:var(--success);">${overallAvg}%</div>
+        <div class="stat-lbl">Aggregate %</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val" style="color:var(--ca-accent);">${STATE.tests.filter(t => (t.score/t.total) >= 0.5).length}</div>
+        <div class="stat-lbl">Cleared (≥50%)</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">Assessment History</span>
+        <button class="tag" style="background:var(--surface-elevated);border:1px solid var(--surface-border);color:var(--text-muted);" onclick="openModal('testModal')">＋ Log Score</button>
+      </div>
+
+      <div>
+        ${STATE.tests.length === 0 ? '<div style="font-size:12px;color:var(--text-dim);text-align:center;padding:16px;">No tests recorded yet. Log prelims and chapter tests!</div>' : ''}
+        ${STATE.tests.map((t, idx) => {
+          const pct = Math.round((t.score / t.total) * 100);
+          return `
+            <div class="target-item" style="justify-content:space-between;">
+              <div>
+                <div style="display:flex;align-items:center;gap:6px;">
+                  <span class="tag ${t.stream === '12th' ? 'tag-boards' : 'tag-ca'}">${t.stream}</span>
+                  <span style="font-size:13px;font-weight:700;">${t.subject}</span>
+                </div>
+                <div style="font-size:10px;color:var(--text-dim);margin-top:2px;">${t.date}</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px;">
+                <div style="text-align:right;">
+                  <div style="font-size:13px;font-weight:800;color:${pct >= 50 ? 'var(--success)' : 'var(--danger)'}">${t.score}/${t.total}</div>
+                  <div style="font-size:10px;color:var(--text-dim);">${pct}%</div>
+                </div>
+                <button class="target-delete" onclick="removeTestRecord(${idx})">✕</button>
+              </div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function submitTestRecord() {
+  const stream = document.getElementById("testStream").value;
+  const subject = document.getElementById("testSubject").value.trim();
+  const score = document.getElementById("testScore").value;
+  const total = document.getElementById("testTotal").value;
+
+  if (!subject || !score || !total) return;
+
+  STATE.tests.unshift({
+    id: Date.now(),
+    stream,
+    subject,
+    score: Number(score),
+    total: Number(total),
+    date: new Date().toISOString().slice(0, 10)
+  });
+
+  saveState();
+  closeModal('testModal');
+  renderTestsPage();
+}
+
+function removeTestRecord(idx) {
+  STATE.tests.splice(idx, 1);
+  saveState();
+  renderTestsPage();
+}
+
+/* =========================================================================
+   VIEW: ANALYTICS & STATS
+   ========================================================================= */
+function renderStatsPage() {
+  const container = document.getElementById("tabStats");
+  const bPct = calculateProgress('boards_12th');
+  const cPct = calculateProgress('cafc');
+  const totalHours = (STATE.studySeconds / 3600).toFixed(1);
+
+  container.innerHTML = `
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">Productivity Metrics</span>
+      </div>
+      <div class="countdown-grid" style="margin-top:0;">
+        <div class="stat-card">
+          <div class="stat-val" style="color:var(--warning);">${STATE.streak} Days</div>
+          <div class="stat-lbl">Active Streak</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val" style="color:var(--boards-accent);">${totalHours} hrs</div>
+          <div class="stat-lbl">Focus Logged</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">Curriculum Progress Overview</span>
+      </div>
+      <div style="font-size:13px;margin-bottom:12px;">
+        <div style="display:flex;justify-content:space-between;margin-bottom:4px;font-weight:700;">
+          <span>12th HSC Commerce Mastery</span>
+          <span style="color:var(--boards-accent);">${bPct}%</span>
+        </div>
+        <div class="prog-track"><div class="prog-bar fill-boards" style="width:${bPct}%;"></div></div>
+      </div>
+
+      <div style="font-size:13px;margin-top:16px;">
+        <div style="display:flex;justify-content:space-between;margin-bottom:4px;font-weight:700;">
+          <span>CAFC Syllabus Mastery</span>
+          <span style="color:var(--ca-accent);">${cPct}%</span>
+        </div>
+        <div class="prog-track"><div class="prog-bar fill-ca" style="width:${cPct}%;"></div></div>
+      </div>
+    </div>
+  `;
+}
+
+/* =========================================================================
+   TARGETS ENGINE: SMART HYBRID PICKER
+   ========================================================================= */
+let currentTargetMode = 'portion';
+
+function setTargetCreationMode(mode) {
+  currentTargetMode = mode;
+  const btnP = document.getElementById("btnModePortion");
+  const btnC = document.getElementById("btnModeCustom");
+  const pWrapper = document.getElementById("portionSelectWrapper");
+  const cWrapper = document.getElementById("customInputWrapper");
+
+  if (mode === 'portion') {
+    btnP.className = "btn btn-brand";
+    btnC.className = "btn btn-dark";
+    pWrapper.style.display = "block";
+    cWrapper.style.display = "none";
+  } else {
+    btnP.className = "btn btn-dark";
+    btnC.className = "btn btn-brand";
+    pWrapper.style.display = "none";
+    cWrapper.style.display = "block";
+  }
+}
+
+function populatePickSubjects() {
+  const stream = document.getElementById("pickStream").value;
+  const subs = SYLLABUS_DEFAULT[stream];
+  const select = document.getElementById("pickSubject");
+  select.innerHTML = subs.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
+  populatePickItems();
+}
+
+function populatePickItems() {
+  const stream = document.getElementById("pickStream").value;
+  const subId = document.getElementById("pickSubject").value;
+  const subject = SYLLABUS_DEFAULT[stream].find(s => s.id === subId);
+  const chpSelect = document.getElementById("pickChapter");
+  const unitGroup = document.getElementById("pickUnitGroup");
+  const chpLabel = document.getElementById("pickChapterLabel");
+
+  if (!subject) return;
+
+  if (stream === 'boards_12th') {
+    chpLabel.innerText = "Chapter";
+    unitGroup.style.display = "none";
+    chpSelect.innerHTML = subject.chapters.map((ch, idx) => `<option value="${idx}">${ch}</option>`).join('');
+  } else {
+    chpLabel.innerText = "Chapter";
+    unitGroup.style.display = "block";
+    chpSelect.innerHTML = subject.chapters.map(chp => `<option value="${chp.id}">${chp.name}</option>`).join('');
+    populatePickUnits();
+  }
+}
+
+function populatePickUnits() {
+  const stream = document.getElementById("pickStream").value;
+  if (stream === 'boards_12th') return;
+
+  const subId = document.getElementById("pickSubject").value;
+  const chpId = document.getElementById("pickChapter").value;
+  const subject = SYLLABUS_DEFAULT[stream].find(s => s.id === subId);
+  if (!subject) return;
+  const chp = subject.chapters.find(c => c.id === chpId);
+  const select = document.getElementById("pickUnit");
+  if (!chp) return;
+  select.innerHTML = chp.units.map((u, idx) => `<option value="${idx}">${u}</option>`).join('');
+}
+
+function openTargetModal(scope = 'daily') {
+  document.getElementById("tgtScope").value = scope;
+  populatePickSubjects();
+  setTargetCreationMode('portion');
+  openModal('targetModal');
+}
+
+function submitTarget() {
+  const scope = document.getElementById("tgtScope").value;
+  let text = "";
+  let stream = "general";
+
+  if (currentTargetMode === 'portion') {
+    const streamKey = document.getElementById("pickStream").value;
+    const subId = document.getElementById("pickSubject").value;
+    const subObj = SYLLABUS_DEFAULT[streamKey].find(s => s.id === subId);
+
+    if (streamKey === 'boards_12th') {
+      const chIdx = Number(document.getElementById("pickChapter").value);
+      text = `${subObj.name.split('(')[0].trim()}: ${subObj.chapters[chIdx]}`;
+      stream = '12th';
+    } else {
+      const chpId = document.getElementById("pickChapter").value;
+      const uIdx = Number(document.getElementById("pickUnit").value);
+      const chpObj = subObj.chapters.find(c => c.id === chpId);
+      text = `${chpObj.name.split(':')[0]}: ${chpObj.units[uIdx]}`;
+      stream = 'cafc';
+    }
+  } else {
+    text = document.getElementById("tgtCustomText").value.trim();
+    stream = document.getElementById("tgtCustomStream").value;
+    if (!text) return;
+  }
+
+  STATE.targets.push({
+    id: Date.now(),
+    text,
+    scope,
+    stream,
+    done: false
+  });
+
+  saveState();
+  closeModal('targetModal');
+  if (currentNav === 'overview') renderOverviewPage();
+}
+
+function renderTargetsHTML(scope) {
+  const filtered = STATE.targets.filter(t => t.scope === scope);
+  if (filtered.length === 0) {
+    return `<div style="font-size:12px;color:var(--text-dim);text-align:center;padding:12px;">No targets set. Schedule your priorities!</div>`;
+  }
+
+  return filtered.map(t => `
+    <div class="target-item">
+      <div class="target-toggle ${t.done ? 'checked' : ''}" onclick="toggleTarget(${t.id})">
+        ${t.done ? '✓' : ''}
+      </div>
+      <div class="target-label ${t.done ? 'completed' : ''}" onclick="toggleTarget(${t.id})">
+        <span class="tag ${t.stream === '12th' ? 'tag-boards' : t.stream === 'cafc' ? 'tag-ca' : ''}" style="margin-right:4px;">${t.stream}</span>
+        ${t.text}
+      </div>
+      <button class="target-delete" onclick="deleteTarget(${t.id})">✕</button>
+    </div>
+  `).join('');
+}
+
+function toggleTarget(id) {
+  const target = STATE.targets.find(t => t.id === id);
+  if (target) {
+    target.done = !target.done;
+    saveState();
+    if (currentNav === 'overview') renderOverviewPage();
+  }
+}
+
+function deleteTarget(id) {
+  STATE.targets = STATE.targets.filter(t => t.id !== id);
+  saveState();
+  if (currentNav === 'overview') renderOverviewPage();
+}
+
+/* =========================================================================
+   TIMER IMPLEMENTATION (STOPWATCH & ADJUSTER)
+   ========================================================================= */
+let timerSeconds = 0;
+let timerInterval = null;
+let isTimerRunning = false;
+
+function formatTime(s) {
+  const hrs = Math.floor(s / 3600);
+  const mins = Math.floor((s % 3600) / 60);
+  const secs = s % 60;
+  return `${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+}
+
+function toggleTimer() {
+  if (isTimerRunning) {
+    clearInterval(timerInterval);
+    isTimerRunning = false;
+  } else {
+    isTimerRunning = true;
+    timerInterval = setInterval(() => {
+      timerSeconds++;
+      STATE.studySeconds++;
+      const el = document.getElementById("stopwatchDisplay");
+      if (el) el.innerText = formatTime(timerSeconds);
+      if (timerSeconds % 60 === 0) saveState();
+    }, 1000);
+  }
+  const btn = document.getElementById("btnTimerToggle");
+  if (btn) btn.innerText = isTimerRunning ? 'Pause Session' : 'Start Focus';
+}
+
+function resetTimer() {
+  clearInterval(timerInterval);
+  isTimerRunning = false;
+  timerSeconds = 0;
+  const el = document.getElementById("stopwatchDisplay");
+  if (el) el.innerText = formatTime(0);
+  const btn = document.getElementById("btnTimerToggle");
+  if (btn) btn.innerText = 'Start Focus';
+}
+
+function applyTimeAdjustment() {
+  const val = Number(document.getElementById("adjustMinutesInput").value);
+  if (!isNaN(val) && val !== 0) {
+    STATE.studySeconds = Math.max(0, STATE.studySeconds + (val * 60));
+    saveState();
+    closeModal('adjustTimerModal');
+    if (currentNav === 'overview') renderOverviewPage();
+    if (currentNav === 'stats') renderStatsPage();
+  }
+}
+
+/* =========================================================================
+   EXAM DATES CONFIGURATION
+   ========================================================================= */
+function saveExamDates() {
+  const b = document.getElementById("cfgBoardsDate").value;
+  const c = document.getElementById("cfgCaDate").value;
+  if (b) STATE.examDates.boards = b;
+  if (c) STATE.examDates.ca = c;
+  saveState();
+  closeModal('datesModal');
+  if (currentNav === 'overview') renderOverviewPage();
+}
+
+/* =========================================================================
+   BACKUP, RESTORE & DOWNLOAD
+   ========================================================================= */
+function openModal(id) {
+  if (id === 'datesModal') {
+    document.getElementById("cfgBoardsDate").value = STATE.examDates.boards;
+    document.getElementById("cfgCaDate").value = STATE.examDates.ca;
+  }
+  document.getElementById(id).classList.add("active");
+}
+
+function closeModal(id) {
+  document.getElementById(id).classList.remove("active");
+}
+
+function exportJSONBackup() {
+  const data = JSON.stringify(STATE, null, 2);
+  const blob = new Blob([data], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `StudyPlannerPro_Backup_${new Date().toISOString().slice(0, 10)}.json`;
+  a.click();
+}
+
+function importJSONBackup() {
+  const raw = document.getElementById("syncJsonInput").value.trim();
+  if (!raw) return;
+  try {
+    const parsed = JSON.parse(raw);
+    STATE = { ...STATE, ...parsed };
+    saveState();
+    closeModal('syncModal');
+    switchNav('overview');
+    alert("Data restored successfully!");
+  } catch (e) {
+    alert("Invalid JSON format. Please verify the copied string.");
+  }
+}
+
+function downloadSelfHTML() {
+  const htmlContent = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
+  const blob = new Blob([htmlContent], { type: "text/html" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "StudyPlannerPro_App.html";
+  a.click();
+}
+
+/* =========================================================================
+   BOOTSTRAP
+   ========================================================================= */
+window.addEventListener("DOMContentLoaded", () => {
+  loadState();
+  renderOverviewPage();
+
+  setTimeout(() => {
+    const splash = document.getElementById("splash");
+    if (splash) splash.classList.add("fade-out");
+  }, 500);
+});
+</script>
+</body>
+</html>
