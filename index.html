@@ -5,9 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
   <meta name="apple-mobile-web-app-capable" content="yes"/>
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
-  <meta name="apple-mobile-web-app-title" content="Study Planner Pro"/>
+  <meta name="apple-mobile-web-app-title" content="studyplanner"/>
   <meta name="theme-color" content="#07090e"/>
-  <title>Study Planner Pro — 12th HSC Commerce & CA Foundation</title>
+  <title>studyplanner — by gandhi</title>
   <style>
     :root {
       --bg: #07090e;
@@ -22,6 +22,9 @@
       --ca-accent: #c084fc;
       --ca-deep: #9333ea;
 
+      --cseet-accent: #34d399;
+      --cseet-deep: #059669;
+
       --text: #f8fafc;
       --text-muted: #94a3b8;
       --text-dim: #64748b;
@@ -30,12 +33,11 @@
       --warning: #fbbf24;
       --success: #10b981;
 
-      /* 5-Stage Tick Palette */
-      --stage-1: #ef4444; /* Lecture / Class */
-      --stage-2: #f59e0b; /* Self Study / Notes */
-      --stage-3: #8b5cf6; /* Revision 1 */
-      --stage-4: #0284c7; /* Revision 2 */
-      --stage-5: #10b981; /* Mastered / Perfected */
+      /* 4-Stage Tick Palette */
+      --stage-1: #eab308; /* Yellow: Lecture / Concept */
+      --stage-2: #a855f7; /* Purple: Self Study / Practice */
+      --stage-3: #3b82f6; /* Blue: Revision 1 */
+      --stage-4: #10b981; /* Green: Mastered / Exam Ready */
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
@@ -60,17 +62,15 @@
     #splash.fade-out { opacity: 0; visibility: hidden; pointer-events: none; }
     .splash-glow {
       position: absolute; width: 340px; height: 340px; border-radius: 50%;
-      background: radial-gradient(circle, rgba(56,189,248,0.22) 0%, rgba(147,51,234,0.18) 60%, transparent 80%);
+      background: radial-gradient(circle, rgba(56,189,248,0.18) 0%, rgba(192,132,252,0.15) 40%, rgba(52,211,153,0.15) 70%, transparent 90%);
       filter: blur(55px);
     }
-    .splash-title { font-size: 32px; font-weight: 900; letter-spacing: -0.5px; z-index: 1; }
-    .splash-title .b-blue { color: var(--boards-accent); }
-    .splash-title .c-purple { color: var(--ca-accent); }
-    .splash-sub { font-size: 11px; color: var(--text-dim); letter-spacing: 2px; text-transform: uppercase; margin-top: 6px; z-index: 1; }
+    .splash-title { font-size: 32px; font-weight: 900; letter-spacing: -0.5px; z-index: 1; text-transform: lowercase; }
+    .splash-sub { font-size: 11px; color: var(--text-dim); letter-spacing: 2px; text-transform: lowercase; margin-top: 6px; z-index: 1; }
 
     /* SYSTEM BAR */
     .system-bar {
-      background: linear-gradient(90deg, rgba(2,132,199,0.85), rgba(147,51,234,0.85));
+      background: linear-gradient(90deg, rgba(2,132,199,0.85), rgba(147,51,234,0.85), rgba(5,150,105,0.85));
       backdrop-filter: blur(8px);
       color: #fff; padding: 7px 14px; display: flex; align-items: center; justify-content: space-between;
       font-size: 11px; font-weight: 600; position: sticky; top: 0; z-index: 100;
@@ -90,11 +90,11 @@
       display: flex; align-items: center; justify-content: space-between;
     }
     .header-logo {
-      font-size: 17px; font-weight: 800; letter-spacing: -0.2px;
-      background: linear-gradient(135deg, #38bdf8, #c084fc);
+      font-size: 19px; font-weight: 900; letter-spacing: -0.3px; text-transform: lowercase;
+      background: linear-gradient(135deg, #38bdf8, #c084fc, #34d399);
       -webkit-background-clip: text; background-clip: text; color: transparent;
     }
-    .header-tag { font-size: 11px; color: var(--text-dim); }
+    .header-sub { font-size: 11px; color: var(--text-muted); font-weight: 600; text-transform: lowercase; }
     .header-actions { display: flex; align-items: center; gap: 8px; }
     
     .streak-badge {
@@ -128,7 +128,7 @@
     .nav-btn svg { width: 20px; height: 20px; stroke-width: 2.2; fill: none; stroke: currentColor; }
 
     /* PAGE LAYOUT & CARDS */
-    .page { padding: 14px 16px 120px; max-width: 600px; margin: 0 auto; }
+    .page { padding: 14px 16px 120px; max-width: 640px; margin: 0 auto; }
     .card {
       background: var(--surface); border: 1px solid var(--surface-border);
       border-radius: 16px; padding: 16px; margin-top: 14px;
@@ -143,24 +143,27 @@
     }
 
     /* COUNTDOWN */
-    .countdown-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+    .countdown-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px; }
     .cd-card {
-      border-radius: 14px; padding: 14px; text-align: center; cursor: pointer;
+      border-radius: 14px; padding: 12px 6px; text-align: center; cursor: pointer;
       position: relative; overflow: hidden; border: 1px solid;
     }
     .cd-card.boards { background: linear-gradient(180deg, rgba(2,132,199,0.12), rgba(2,132,199,0.02)); border-color: rgba(56,189,248,0.3); }
     .cd-card.ca { background: linear-gradient(180deg, rgba(147,51,234,0.12), rgba(147,51,234,0.02)); border-color: rgba(192,132,252,0.3); }
-    .cd-days { font-size: 32px; font-weight: 900; line-height: 1; }
+    .cd-card.cseet { background: linear-gradient(180deg, rgba(5,150,105,0.12), rgba(5,150,105,0.02)); border-color: rgba(52,211,153,0.3); }
+    .cd-days { font-size: 26px; font-weight: 900; line-height: 1; }
     .cd-card.boards .cd-days { color: var(--boards-accent); }
     .cd-card.ca .cd-days { color: var(--ca-accent); }
-    .cd-label { font-size: 11px; font-weight: 800; margin-top: 6px; text-transform: uppercase; }
-    .cd-sub { font-size: 10px; color: var(--text-muted); margin-top: 2px; }
+    .cd-card.cseet .cd-days { color: var(--cseet-accent); }
+    .cd-label { font-size: 10px; font-weight: 800; margin-top: 5px; text-transform: uppercase; }
+    .cd-sub { font-size: 9px; color: var(--text-muted); margin-top: 2px; }
 
     /* STOPWATCH */
     .timer-display {
-      font-size: 42px; font-weight: 900; font-variant-numeric: tabular-nums;
-      text-align: center; margin: 12px 0; letter-spacing: 1px;
+      font-size: 44px; font-weight: 900; font-variant-numeric: tabular-nums;
+      text-align: center; margin: 12px 0 6px; letter-spacing: 1px;
     }
+    .timer-hint { font-size: 11px; text-align: center; color: var(--text-dim); margin-bottom: 14px; }
     .timer-controls { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
 
     /* PROGRESS TRACKS */
@@ -168,15 +171,17 @@
     .prog-bar { height: 100%; border-radius: 100px; transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
     .fill-boards { background: linear-gradient(90deg, var(--boards-deep), var(--boards-accent)); }
     .fill-ca { background: linear-gradient(90deg, var(--ca-deep), var(--ca-accent)); }
+    .fill-cseet { background: linear-gradient(90deg, var(--cseet-deep), var(--cseet-accent)); }
 
     /* SEGMENTS */
     .segmented { display: flex; gap: 4px; background: var(--surface-elevated); padding: 4px; border-radius: 12px; margin-bottom: 14px; }
     .segmented-btn {
       flex: 1; border: none; background: none; color: var(--text-muted);
-      font-weight: 700; font-size: 12px; padding: 8px 0; border-radius: 8px; transition: all 0.2s ease;
+      font-weight: 700; font-size: 11px; padding: 8px 0; border-radius: 8px; transition: all 0.2s ease;
     }
     .segmented-btn.active.boards { background: var(--boards-accent); color: #07090e; }
     .segmented-btn.active.ca { background: var(--ca-accent); color: #07090e; }
+    .segmented-btn.active.cseet { background: var(--cseet-accent); color: #07090e; }
 
     /* SUBJECT CARD ACCORDION */
     .sub-card {
@@ -189,11 +194,11 @@
     }
     .sub-header:hover { background: rgba(255,255,255,0.015); }
     .sub-info { flex: 1; padding-right: 12px; }
-    .sub-title { font-size: 14px; font-weight: 800; color: var(--text); }
+    .sub-title { font-size: 13.5px; font-weight: 800; color: var(--text); }
     .sub-pct { font-size: 12px; font-weight: 800; font-variant-numeric: tabular-nums; }
     .sub-content { padding: 4px 12px 14px; border-top: 1px solid rgba(255,255,255,0.04); display: flex; flex-direction: column; gap: 8px; }
 
-    /* CAFC CHAPTER LEVEL ACCORDION */
+    /* CAFC/CSEET CHAPTER LEVEL ACCORDION */
     .chp-card {
       background: var(--surface-elevated); border: 1px solid var(--border-subtle);
       border-radius: 10px; overflow: hidden;
@@ -210,7 +215,7 @@
       display: flex; flex-direction: column; gap: 6px; background: rgba(0,0,0,0.15);
     }
 
-    /* DIRECT ITEM (12th Chapter or CAFC Unit) */
+    /* DIRECT ITEM (12th Chapter or CAFC/CSEET Unit) */
     .item-card {
       display: flex; align-items: center; justify-content: space-between;
       background: var(--surface-elevated); border: 1px solid var(--border-subtle);
@@ -220,16 +225,15 @@
     .tick-strip { display: flex; gap: 4px; align-items: center; }
     
     .tick-box {
-      width: 20px; height: 20px; border-radius: 5px; border: 1.5px solid var(--surface-border);
+      width: 21px; height: 21px; border-radius: 5px; border: 1.5px solid var(--surface-border);
       background: var(--surface); display: flex; align-items: center; justify-content: center;
       font-size: 8.5px; font-weight: 900; color: var(--text-dim); cursor: pointer;
       transition: all 0.15s ease;
     }
-    .tick-box.done-1 { background: var(--stage-1); border-color: var(--stage-1); color: #fff; }
-    .tick-box.done-2 { background: var(--stage-2); border-color: var(--stage-2); color: #07090e; }
+    .tick-box.done-1 { background: var(--stage-1); border-color: var(--stage-1); color: #07090e; }
+    .tick-box.done-2 { background: var(--stage-2); border-color: var(--stage-2); color: #fff; }
     .tick-box.done-3 { background: var(--stage-3); border-color: var(--stage-3); color: #fff; }
-    .tick-box.done-4 { background: var(--stage-4); border-color: var(--stage-4); color: #fff; }
-    .tick-box.done-5 { background: var(--stage-5); border-color: var(--stage-5); color: #07090e; }
+    .tick-box.done-4 { background: var(--stage-4); border-color: var(--stage-4); color: #07090e; }
 
     /* TARGET ROWS */
     .target-item {
@@ -252,17 +256,18 @@
     .tag { font-size: 9px; font-weight: 800; text-transform: uppercase; padding: 2px 6px; border-radius: 4px; letter-spacing: 0.4px; }
     .tag-boards { background: rgba(56,189,248,0.12); color: var(--boards-accent); border: 1px solid rgba(56,189,248,0.3); }
     .tag-ca { background: rgba(192,132,252,0.12); color: var(--ca-accent); border: 1px solid rgba(192,132,252,0.3); }
+    .tag-cseet { background: rgba(52,211,153,0.12); color: var(--cseet-accent); border: 1px solid rgba(52,211,153,0.3); }
     .tag-high { background: rgba(244,63,94,0.15); color: #fb7185; }
     .tag-med { background: rgba(251,191,36,0.15); color: #fde047; }
     .tag-low { background: rgba(16,185,129,0.15); color: #6ee7b7; }
 
     /* ANALYTICS */
-    .analytics-banner { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+    .analytics-banner { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px; }
     .stat-card {
       background: var(--surface-elevated); border: 1px solid var(--border-subtle);
       border-radius: 12px; padding: 10px; text-align: center;
     }
-    .stat-val { font-size: 18px; font-weight: 900; }
+    .stat-val { font-size: 17px; font-weight: 900; }
     .stat-lbl { font-size: 9px; font-weight: 800; color: var(--text-dim); text-transform: uppercase; margin-top: 2px; }
 
     /* FORMS & BUTTONS */
@@ -282,6 +287,15 @@
     .btn-brand { background: linear-gradient(135deg, var(--boards-deep), var(--boards-accent)); color: #07090e; }
     .btn-dark { background: var(--surface-elevated); border: 1px solid var(--surface-border); color: var(--text-muted); }
     .btn-danger { background: rgba(244,63,94,0.12); color: var(--danger); border: 1px solid rgba(244,63,94,0.3); }
+
+    /* QUICK PILL BUTTONS */
+    .pill-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin: 10px 0; }
+    .pill-btn {
+      background: var(--surface-elevated); border: 1px solid var(--surface-border);
+      color: var(--text); border-radius: 8px; padding: 8px 4px; font-size: 11px; font-weight: 700;
+      text-align: center; cursor: pointer; transition: background 0.15s;
+    }
+    .pill-btn:hover { background: var(--surface-border); }
 
     /* MODAL */
     .modal-backdrop {
@@ -315,12 +329,13 @@
 
 <div id="splash">
   <div class="splash-glow"></div>
-  <div class="splash-title"><span class="b-blue">12th</span> & <span class="c-purple">CAFC</span></div>
-  <div class="splash-sub">Study Planner Pro</div>
+  <div class="splash-title"><span style="color:var(--boards-accent)">study</span><span style="color:var(--ca-accent)">plan</span><span style="color:var(--cseet-accent)">ner</span></div>
+  <div class="splash-sub">by gandhi</div>
 </div>
 
+<!-- SYSTEM BAR -->
 <div class="system-bar" id="systemBar">
-  <span>⚡ Offline Engine Active • Balbharati & ICAI Verified</span>
+  <span>⚡ Balbharati Chapters • ICAI New Scheme • ICSI Latest 4x100M</span>
   <div style="display:flex;gap:6px;align-items:center;">
     <button onclick="downloadSelfHTML()">Save File</button>
     <button onclick="exportJSONBackup()">Backup</button>
@@ -332,12 +347,13 @@
 <div id="appRoot">
   <header class="header">
     <div>
-      <div class="header-logo">Study Planner Pro</div>
-      <div class="header-tag" id="headerTag">12th HSC Commerce & CA Foundation</div>
+      <div class="header-logo">studyplanner</div>
+      <div class="header-sub">by gandhi • <span id="headerUserName">Student</span></div>
     </div>
     <div class="header-actions">
       <div class="streak-badge" id="streakBadge" title="Consecutive active study days">🔥 0d</div>
-      <button class="btn-circle" title="Adjust Today's Time" onclick="openModal('adjustTimerModal')">⏱️</button>
+      <button class="btn-circle" title="Task Archive Log" onclick="openModal('logModal')">📜</button>
+      <button class="btn-circle" title="Add / Subtract Time" onclick="openModal('adjustTimerModal')">⏱️</button>
       <button class="btn-circle" title="Backup & Restore" onclick="openModal('syncModal')">⚙️</button>
       <button class="btn-circle" title="Add Target" onclick="openTargetModal()">＋</button>
     </div>
@@ -373,6 +389,19 @@
   </nav>
 </div>
 
+<!-- MODAL: NAME SETUP (FIRST TIME) -->
+<div class="modal-backdrop" id="nameModal">
+  <div class="modal-box" style="border-radius: 20px; align-self: center; margin: 16px;">
+    <div class="modal-title" style="text-align:center;">Welcome to studyplanner</div>
+    <p style="font-size:12px;color:var(--text-muted);text-align:center;margin-bottom:14px;">by gandhi • Please enter your name to calibrate your personal planner.</p>
+    <div class="modal-group">
+      <label class="modal-lbl">Your Name</label>
+      <input type="text" class="form-input" id="userNameInput" placeholder="e.g. Krishil"/>
+    </div>
+    <button class="btn btn-brand btn-full" style="margin-top:10px;" onclick="saveUserName()">Get Started</button>
+  </div>
+</div>
+
 <!-- MODAL: DATES CONFIG -->
 <div class="modal-backdrop" id="datesModal">
   <div class="modal-box">
@@ -385,6 +414,10 @@
       <label class="modal-lbl">CA Foundation Exam Date</label>
       <input type="date" class="form-input" id="cfgCaDate"/>
     </div>
+    <div class="modal-group">
+      <label class="modal-lbl">CSEET Exam Date</label>
+      <input type="date" class="form-input" id="cfgCseetDate"/>
+    </div>
     <div style="display:flex;gap:8px;margin-top:14px;">
       <button class="btn btn-dark" style="flex:1" onclick="closeModal('datesModal')">Cancel</button>
       <button class="btn btn-brand" style="flex:1" onclick="saveExamDates()">Save Dates</button>
@@ -392,18 +425,34 @@
   </div>
 </div>
 
-<!-- MODAL: ADJUST TIMER -->
+<!-- MODAL: EASY TIME ADJUSTMENT -->
 <div class="modal-backdrop" id="adjustTimerModal">
   <div class="modal-box">
-    <div class="modal-title">Manual Time Adjustment</div>
-    <p style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">Add or subtract minutes logged for offline sessions.</p>
-    <div class="modal-group">
-      <label class="modal-lbl">Minutes to add or subtract (+ / -)</label>
-      <input type="number" class="form-input" id="adjustMinutesInput" placeholder="e.g. 45 or -15"/>
+    <div class="modal-title">Adjust Stopwatch Time</div>
+    <p style="font-size:12px;color:var(--text-muted);margin-bottom:10px;">Quickly add or subtract minutes from your active stopwatch display and logged study time.</p>
+    
+    <label class="modal-lbl">Quick 1-Tap Adjustments</label>
+    <div class="pill-grid">
+      <button type="button" class="pill-btn" onclick="quickAdjustMinutes(15)">+15 min</button>
+      <button type="button" class="pill-btn" onclick="quickAdjustMinutes(30)">+30 min</button>
+      <button type="button" class="pill-btn" onclick="quickAdjustMinutes(60)">+1 hour</button>
+      <button type="button" class="pill-btn" style="color:var(--danger);" onclick="quickAdjustMinutes(-15)">-15 min</button>
     </div>
-    <div style="display:flex;gap:8px;margin-top:14px;">
-      <button class="btn btn-dark" style="flex:1" onclick="closeModal('adjustTimerModal')">Cancel</button>
-      <button class="btn btn-brand" style="flex:1" onclick="applyTimeAdjustment()">Update Time</button>
+
+    <div class="modal-group" style="margin-top:14px;">
+      <label class="modal-lbl">Custom Minutes</label>
+      <input type="number" class="form-input" id="customMinutesInput" min="1" placeholder="Enter minutes (e.g. 45)"/>
+    </div>
+
+    <div style="display:flex;gap:8px;margin-top:10px;">
+      <button class="btn btn-brand" style="flex:1;" onclick="applyCustomTime(1)">＋ Add Time</button>
+      <button class="btn btn-danger" style="flex:1;" onclick="applyCustomTime(-1)">－ Subtract Time</button>
+    </div>
+
+    <div id="timerFeedbackMsg" style="font-size:11px;color:var(--success);text-align:center;margin-top:10px;min-height:16px;"></div>
+
+    <div style="display:flex;margin-top:12px;">
+      <button class="btn btn-dark btn-full" onclick="closeModal('adjustTimerModal')">Done</button>
     </div>
   </div>
 </div>
@@ -415,7 +464,7 @@
     <div class="modal-group">
       <label class="modal-lbl">Target Scope</label>
       <select class="form-input" id="tgtScope">
-        <option value="daily">Daily Target</option>
+        <option value="daily">Daily Target (Rollover at 12 AM)</option>
         <option value="monthly">Monthly Priority</option>
       </select>
     </div>
@@ -434,13 +483,14 @@
         <select class="form-input" id="pickStream" onchange="populatePickSubjects()">
           <option value="boards_12th">12th Boards</option>
           <option value="cafc">CA Foundation</option>
+          <option value="cseet">CSEET (4 Papers x 100M)</option>
         </select>
       </div>
       <div class="modal-group">
         <label class="modal-lbl">Subject</label>
-        <select class="form-input" id="pickSubject" onchange="populatePickItems()"></select>
+        <select class="form-input" id="pickSubject" onchange="populatePickChapters()"></select>
       </div>
-      <div class="modal-group" id="pickChapterGroup">
+      <div class="modal-group">
         <label class="modal-lbl" id="pickChapterLabel">Chapter</label>
         <select class="form-input" id="pickChapter" onchange="populatePickUnits()"></select>
       </div>
@@ -457,12 +507,13 @@
         <select class="form-input" id="tgtCustomStream">
           <option value="12th">12th Boards</option>
           <option value="cafc">CA Foundation</option>
+          <option value="cseet">CSEET</option>
           <option value="general">General</option>
         </select>
       </div>
       <div class="modal-group">
         <label class="modal-lbl">Task Description</label>
-        <input type="text" class="form-input" id="tgtCustomText" placeholder="e.g. French Grammar: Pronoms Personnels Exercises"/>
+        <input type="text" class="form-input" id="tgtCustomText" placeholder="e.g. French Grammar: Pronoms Personnels"/>
       </div>
     </div>
 
@@ -479,23 +530,28 @@
     <div class="modal-title">Log Test / Mock Result</div>
     <div class="modal-group">
       <label class="modal-lbl">Exam Category</label>
-      <select class="form-input" id="testStream">
-        <option value="12th">12th Boards</option>
+      <select class="form-input" id="testStream" onchange="populateTestSubjects()">
+        <option value="boards_12th">12th Boards</option>
         <option value="cafc">CA Foundation</option>
+        <option value="cseet">CSEET</option>
       </select>
     </div>
     <div class="modal-group">
-      <label class="modal-lbl">Subject / Chapter</label>
-      <input type="text" class="form-input" id="testSubject" placeholder="e.g. Maths 1 - Matrices & Differentiation Test"/>
+      <label class="modal-lbl">Subject</label>
+      <select class="form-input" id="testSubjectSelect"></select>
+    </div>
+    <div class="modal-group">
+      <label class="modal-lbl">Chapter / Test Description</label>
+      <input type="text" class="form-input" id="testTopic" placeholder="e.g. Mock Test 1 / Prelim Exam"/>
     </div>
     <div style="display:flex;gap:10px;">
       <div class="modal-group" style="flex:1;">
         <label class="modal-lbl">Score Obtained</label>
-        <input type="number" class="form-input" id="testScore" placeholder="72"/>
+        <input type="number" class="form-input" id="testScore" placeholder="75"/>
       </div>
       <div class="modal-group" style="flex:1;">
         <label class="modal-lbl">Total Marks</label>
-        <input type="number" class="form-input" id="testTotal" placeholder="80"/>
+        <input type="number" class="form-input" id="testTotal" placeholder="100"/>
       </div>
     </div>
     <div style="display:flex;gap:8px;margin-top:14px;">
@@ -505,11 +561,23 @@
   </div>
 </div>
 
+<!-- MODAL: COMPLETED TASK ARCHIVE LOG -->
+<div class="modal-backdrop" id="logModal">
+  <div class="modal-box">
+    <div class="modal-title">Task Completion Archive</div>
+    <p style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">Chronological timeline of all finished tasks logged by date.</p>
+    <div id="completedLogContainer" style="max-height: 55vh; overflow-y: auto;"></div>
+    <div style="display:flex;margin-top:14px;">
+      <button class="btn btn-dark btn-full" onclick="closeModal('logModal')">Close</button>
+    </div>
+  </div>
+</div>
+
 <!-- MODAL: BACKUP & RESTORE -->
 <div class="modal-backdrop" id="syncModal">
   <div class="modal-box">
     <div class="modal-title">Backup & Synchronize</div>
-    <p style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">Sync your progress, test logs, and timer data across mobile and desktop devices without account logins.</p>
+    <p style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">Sync your progress, test logs, and timer data across devices without account logins.</p>
     <div class="modal-group">
       <button class="btn btn-brand btn-full" onclick="exportJSONBackup()">💾 Download JSON Backup</button>
     </div>
@@ -536,9 +604,10 @@
 
 <script>
 /* =========================================================================
-   REVERIFIED & EXHAUSTIVE PORTIONS
-   - 12th: Maharashtra State Board (Balbharati) HSC Commerce Official Syllabi
-   - CAFC: ICAI New Scheme (4 Papers: 100 Marks Each) Official Study Modules
+   CURRICULUM ARCHITECTURE
+   - 12th Boards: DIRECT Balbharati Chapters (NO unitwise segregation)
+   - CAFC: ICAI New Scheme (Sub -> Chp -> Unit), Ch 5 is Business Cycles
+   - CSEET: ICSI Latest Scheme (4 Papers x 100 Marks, Sub -> Chp -> Unit)
    ========================================================================= */
 const SYLLABUS_DEFAULT = {
   boards_12th: [
@@ -610,7 +679,7 @@ const SYLLABUS_DEFAULT = {
         "1. Commission, Brokerage and Discount",
         "2. Insurance and Annuity",
         "3. Linear Regression",
-        "4. Time Series and Bivariate Data",
+        "4. Time Series Analysis",
         "5. Index Numbers",
         "6. Linear Programming Problems (LPP)",
         "7. Assignment Problem and Sequencing",
@@ -676,105 +745,106 @@ const SYLLABUS_DEFAULT = {
       id: "ca_p1",
       name: "Paper 1: Accounting (100 Marks)",
       chapters: [
-        {
-          id: "p1_c1",
-          name: "Ch 1: Theoretical Framework",
+        { 
+          id: "cap1_c1", 
+          name: "Ch 1: Theoretical Framework", 
           units: [
-            "Unit 1: Meaning and Scope of Accounting",
-            "Unit 2: Accounting Concepts, Principles & Conventions",
-            "Unit 3: Accounting Terminology - Glossary",
-            "Unit 4: Capital and Revenue Expenditures & Receipts",
-            "Unit 5: Contingent Assets and Contingent Liabilities",
-            "Unit 6: Accounting Policies",
-            "Unit 7: Accounting as a Measurement Discipline (Valuation Principles)",
+            "Unit 1: Meaning and Scope of Accounting", 
+            "Unit 2: Accounting Concepts, Principles and Conventions", 
+            "Unit 3: Accounting Terminology - Glossary", 
+            "Unit 4: Capital and Revenue Expenditures and Receipts", 
+            "Unit 5: Contingent Assets and Contingent Liabilities", 
+            "Unit 6: Accounting Policies", 
+            "Unit 7: Accounting as a Measurement Discipline - Valuation Principles", 
             "Unit 8: Accounting Standards & Ind AS/IFRS Overview"
-          ]
+          ] 
         },
-        {
-          id: "p1_c2",
-          name: "Ch 2: Accounting Process",
+        { 
+          id: "cap1_c2", 
+          name: "Ch 2: Accounting Process", 
           units: [
-            "Unit 1: Books of Prime Entry, Journal and Ledger",
-            "Unit 2: Cash Book and Subsidiary Books",
-            "Unit 3: Trial Balance Preparation & Verification",
+            "Unit 1: Basic Books of Prime Entry, Journal and Subsidiary Books", 
+            "Unit 2: Ledgers", 
+            "Unit 3: Trial Balance", 
             "Unit 4: Rectification of Errors (Suspense Account)"
-          ]
+          ] 
         },
-        {
-          id: "p1_c3",
-          name: "Ch 3: Bank Reconciliation Statement",
+        { 
+          id: "cap1_c3", 
+          name: "Ch 3: Bank Reconciliation Statement", 
           units: [
-            "Unit 1: Causes of Differences between Cash Book & Pass Book",
-            "Unit 2: Preparation of BRS with & without Adjusted Cash Book"
-          ]
+            "Unit 1: Causes of Differences between Cash Book & Pass Book", 
+            "Unit 2: Preparation of BRS with and without Adjusted Cash Book"
+          ] 
         },
-        {
-          id: "p1_c4",
-          name: "Ch 4: Inventories",
+        { 
+          id: "cap1_c4", 
+          name: "Ch 4: Inventories", 
           units: [
-            "Unit 1: Meaning, Basis & Methods of Inventory Valuation (FIFO, WAC)",
-            "Unit 2: Net Realisable Value (NRV) & Inventory Taking/Adjustments"
-          ]
+            "Unit 1: Valuation Principles & Techniques (FIFO, WAC)", 
+            "Unit 2: Net Realisable Value (NRV) & Inventory Taking Adjustments"
+          ] 
         },
-        {
-          id: "p1_c5",
-          name: "Ch 5: Depreciation and Amortisation",
+        { 
+          id: "cap1_c5", 
+          name: "Ch 5: Depreciation and Amortisation", 
           units: [
-            "Unit 1: Concepts, Factors & Methods (SLM & WDV)",
+            "Unit 1: Concepts & Methods (SLM & WDV)", 
             "Unit 2: Change in Method, Sale of Asset & Provision for Depreciation"
-          ]
+          ] 
         },
-        {
-          id: "p1_c6",
-          name: "Ch 6: Bills of Exchange & Promissory Notes",
+        { 
+          id: "cap1_c6", 
+          name: "Ch 6: Bills of Exchange and Promissory Notes", 
           units: [
-            "Unit 1: Drawing, Acceptance, Endorsement & Discounting",
+            "Unit 1: Drawing, Acceptance, Endorsement & Discounting", 
             "Unit 2: Dishonour, Noting Charges, Renewal & Accommodation Bills"
-          ]
+          ] 
         },
-        {
-          id: "p1_c7",
-          name: "Ch 7: Preparation of Final Accounts of Sole Proprietors",
+        { 
+          id: "cap1_c7", 
+          name: "Ch 7: Final Accounts of Sole Proprietors", 
           units: [
-            "Unit 1: Trading & Profit and Loss Account Preparation",
-            "Unit 2: Balance Sheet with Closing & Comprehensive Year-End Adjustments"
-          ]
+            "Unit 1: Trading and Profit & Loss Account Preparation", 
+            "Unit 2: Balance Sheet with Closing & Year-End Adjustments"
+          ] 
         },
-        {
-          id: "p1_c8",
-          name: "Ch 8: Financial Statements of Not-for-Profit Organisations",
+        { 
+          id: "cap1_c8", 
+          name: "Ch 8: Financial Statements of Not-for-Profit Organisations", 
           units: [
-            "Unit 1: Receipts and Payments Account Analysis",
+            "Unit 1: Receipts and Payments Account Analysis", 
             "Unit 2: Income and Expenditure Account & Balance Sheet Preparation"
-          ]
+          ] 
         },
-        {
-          id: "p1_c9",
-          name: "Ch 9: Accounts from Incomplete Records (Single Entry)",
+        { 
+          id: "cap1_c9", 
+          name: "Ch 9: Accounts from Incomplete Records (Single Entry)", 
           units: [
-            "Unit 1: Statement of Affairs Method (Capital Comparison)",
+            "Unit 1: Statement of Affairs Method (Capital Comparison)", 
             "Unit 2: Conversion into Double Entry System"
-          ]
+          ] 
         },
-        {
-          id: "p1_c10",
-          name: "Ch 10: Partnership and LLP Accounts",
+        { 
+          id: "cap1_c10", 
+          name: "Ch 10: Partnership and LLP Accounts", 
           units: [
-            "Unit 1: Partnership Fundamentals & P&L Appropriation",
-            "Unit 2: Goodwill Valuation & Accounting Treatment",
-            "Unit 3: Admission of a Partner (Revaluation, Capital Adjustments)",
-            "Unit 4: Retirement and Death of a Partner (JLP, Settlement)",
+            "Unit 1: Introduction to Partnership & P&L Appropriation", 
+            "Unit 2: Goodwill Valuation & Accounting Treatment", 
+            "Unit 3: Admission of a Partner (Revaluation, Capital Adjustments)", 
+            "Unit 4: Retirement and Death of a Partner (JLP, Settlement)", 
             "Unit 5: Dissolution of Partnership Firm & Insolvency of Partners"
-          ]
+          ] 
         },
-        {
-          id: "p1_c11",
-          name: "Ch 11: Company Accounts",
+        { 
+          id: "cap1_c11", 
+          name: "Ch 11: Company Accounts", 
           units: [
-            "Unit 1: Issue, Forfeiture & Re-issue of Shares (Pro-rata Allotment)",
-            "Unit 2: Issue of Bonus Shares and Right Shares",
-            "Unit 3: Issue and Terms of Redemption of Debentures"
-          ]
+            "Unit 1: Issue, Forfeiture and Re-issue of Shares (Pro-rata Allotment)", 
+            "Unit 2: Issue of Bonus Shares and Right Shares", 
+            "Unit 3: Redemption of Preference Shares", 
+            "Unit 4: Issue and Terms of Redemption of Debentures"
+          ] 
         }
       ]
     },
@@ -782,72 +852,73 @@ const SYLLABUS_DEFAULT = {
       id: "ca_p2",
       name: "Paper 2: Business Laws (100 Marks)",
       chapters: [
-        {
-          id: "p2_c1",
-          name: "Ch 1: Indian Regulatory Framework",
+        { 
+          id: "cap2_c1", 
+          name: "Ch 1: Indian Regulatory Framework", 
           units: [
             "Unit 1: Sources of Law, Hierarchy of Courts & Legislative Process in India"
-          ]
+          ] 
         },
-        {
-          id: "p2_c2",
-          name: "Ch 2: The Indian Contract Act, 1872",
+        { 
+          id: "cap2_c2", 
+          name: "Ch 2: The Indian Contract Act, 1872", 
           units: [
-            "Unit 1: Nature of Contracts & Essentials of Valid Offer and Acceptance",
-            "Unit 2: Consideration, Legal Rules & Doctrine of Privity of Contract",
-            "Unit 3: Capacity to Contract, Free Consent & Legality of Object",
-            "Unit 4: Void Agreements & Performance of Contract",
-            "Unit 5: Discharge and Breach of Contract and its Remedies",
-            "Unit 6: Contingent Contracts and Quasi Contracts",
-            "Unit 7: Contract of Indemnity and Guarantee (Sec 124-147)",
-            "Unit 8: Bailment and Pledge (Sec 148-181)",
-            "Unit 9: Contract of Agency (Sec 182-238)"
-          ]
+            "Unit 1: Nature of Contracts & Valid Offer and Acceptance", 
+            "Unit 2: Consideration & Privity of Contract", 
+            "Unit 3: Capacity to Contract & Free Consent", 
+            "Unit 4: Legality of Object & Void Agreements", 
+            "Unit 5: Performance of Contract", 
+            "Unit 6: Discharge of Contract, Breach and Remedies", 
+            "Unit 7: Contingent and Quasi Contracts", 
+            "Unit 8: Contract of Indemnity and Guarantee (Sec 124-147)", 
+            "Unit 9: Bailment and Pledge (Sec 148-181)", 
+            "Unit 10: Contract of Agency (Sec 182-238)"
+          ] 
         },
-        {
-          id: "p2_c3",
-          name: "Ch 3: The Sale of Goods Act, 1930",
+        { 
+          id: "cap2_c3", 
+          name: "Ch 3: The Sale of Goods Act, 1930", 
           units: [
-            "Unit 1: Formation of Contract of Sale & Goods Classification",
-            "Unit 2: Conditions and Warranties & Doctrine of Caveat Emptor",
-            "Unit 3: Transfer of Property, Passing of Risk & Nemo Dat Quod Non Habet",
-            "Unit 4: Unpaid Seller, Rights Against Goods & Remedies for Breach"
-          ]
+            "Unit 1: Formation of Contract of Sale & Goods Classification", 
+            "Unit 2: Conditions and Warranties & Caveat Emptor", 
+            "Unit 3: Transfer of Property, Risk & Nemo Dat Quod Non Habet", 
+            "Unit 4: Unpaid Seller Rights Against Goods & Remedies for Breach"
+          ] 
         },
-        {
-          id: "p2_c4",
-          name: "Ch 4: The Indian Partnership Act, 1932",
+        { 
+          id: "cap2_c4", 
+          name: "Ch 4: The Indian Partnership Act, 1932", 
           units: [
-            "Unit 1: General Nature of Partnership & True Test of Partnership",
-            "Unit 2: Relations of Partners (Inter-se & with Third Parties, Implied Authority)",
-            "Unit 3: Registration of Firms, Consequences of Non-Registration & Dissolution"
-          ]
+            "Unit 1: General Nature & True Test of Partnership", 
+            "Unit 2: Relations of Partners (Inter-se & with Third Parties, Implied Authority)", 
+            "Unit 3: Registration of Firms & Dissolution of Partnership Firm"
+          ] 
         },
-        {
-          id: "p2_c5",
-          name: "Ch 5: The Limited Liability Partnership Act, 2008",
+        { 
+          id: "cap2_c5", 
+          name: "Ch 5: The Limited Liability Partnership Act, 2008", 
           units: [
-            "Unit 1: Concept, Salient Features & Differences with Partnership/Company",
-            "Unit 2: Incorporation Process, Designated Partners & Annual Compliances"
-          ]
+            "Unit 1: Concept, Salient Features & Comparison with Partnership/Company", 
+            "Unit 2: Incorporation Process, Partners & Annual Compliances"
+          ] 
         },
-        {
-          id: "p2_c6",
-          name: "Ch 6: The Companies Act, 2013",
+        { 
+          id: "cap2_c6", 
+          name: "Ch 6: The Companies Act, 2013", 
           units: [
-            "Unit 1: Meaning, Characteristics & Lifting of Corporate Veil",
-            "Unit 2: Classification of Companies (OPC, Small, Private, Public, Sec 8)",
-            "Unit 3: Incorporation of Company, MOA, AOA & Doctrine of Ultra Vires/Indoor Management"
-          ]
+            "Unit 1: Corporate Veil, Characteristics & Types of Companies", 
+            "Unit 2: Incorporation, Memorandum & Articles of Association", 
+            "Unit 3: Doctrine of Ultra Vires & Indoor Management"
+          ] 
         },
-        {
-          id: "p2_c7",
-          name: "Ch 7: The Negotiable Instruments Act, 1881",
+        { 
+          id: "cap2_c7", 
+          name: "Ch 7: The Negotiable Instruments Act, 1881", 
           units: [
-            "Unit 1: Meaning, Characteristics of Promissory Note, Bill of Exchange & Cheque",
-            "Unit 2: Holder, Holder in Due Course, Negotiation, Endorsement & Crossing",
-            "Unit 3: Dishonour of Cheque for Insufficiency of Funds (Section 138-142)"
-          ]
+            "Unit 1: Meaning & Characteristics of Promissory Note, Bill & Cheque", 
+            "Unit 2: Holder, Holder in Due Course, Negotiation & Crossing", 
+            "Unit 3: Dishonour of Cheques & Penalties (Sec 138-142)"
+          ] 
         }
       ]
     },
@@ -855,42 +926,42 @@ const SYLLABUS_DEFAULT = {
       id: "ca_p3",
       name: "Paper 3: Quantitative Aptitude (100 Marks)",
       chapters: [
-        {
-          id: "p3_c1",
-          name: "Part A: Business Mathematics (40 Marks)",
+        { 
+          id: "cap3_c1", 
+          name: "Part A: Business Mathematics (40 Marks)", 
           units: [
-            "Unit 1: Ratio, Proportion, Indices and Logarithms",
-            "Unit 2: Equations (Linear, Quadratic, Cubic & Matrices)",
-            "Unit 3: Linear Inequalities with Objective Functions",
-            "Unit 4: Mathematics of Finance (Simple/Compound Interest, Effective Rate, Annuity, Perpetuity, Sinking Fund)",
-            "Unit 5: Permutations and Combinations (Principles of Counting, Factorials)",
-            "Unit 6: Sequence and Series (Arithmetic and Geometric Progressions)",
-            "Unit 7: Sets, Relations and Functions",
+            "Unit 1: Ratio, Proportion, Indices and Logarithms", 
+            "Unit 2: Equations (Linear, Quadratic, Cubic & Matrices)", 
+            "Unit 3: Linear Inequalities in Two Variables", 
+            "Unit 4: Mathematics of Finance (SI, CI, Effective Rate, Annuity, Sinking Fund)", 
+            "Unit 5: Permutations and Combinations", 
+            "Unit 6: Sequence and Series (AP and GP Progressions)", 
+            "Unit 7: Sets, Relations and Functions", 
             "Unit 8: Basic Applications of Differential and Integral Calculus"
-          ]
+          ] 
         },
-        {
-          id: "p3_c2",
-          name: "Part B: Logical Reasoning (20 Marks)",
+        { 
+          id: "cap3_c2", 
+          name: "Part B: Logical Reasoning (20 Marks)", 
           units: [
-            "Unit 1: Number Series, Coding and Decoding & Odd Man Out",
-            "Unit 2: Direction Tests",
-            "Unit 3: Seating Arrangements (Linear & Circular Arrangements)",
+            "Unit 1: Number Series, Coding-Decoding and Odd Man Out", 
+            "Unit 2: Direction Sense Tests", 
+            "Unit 3: Seating Arrangements (Linear and Circular)", 
             "Unit 4: Blood Relations"
-          ]
+          ] 
         },
-        {
-          id: "p3_c3",
-          name: "Part C: Statistics (40 Marks)",
+        { 
+          id: "cap3_c3", 
+          name: "Part C: Statistics (40 Marks)", 
           units: [
-            "Unit 1: Statistical Representation of Data (Sampling, Frequency Distribution, Graphical Display)",
-            "Unit 2: Measures of Central Tendency (Mean, Median, Mode, Geometric & Harmonic Mean)",
-            "Unit 3: Measures of Dispersion (Range, QD, MD, Standard Deviation, Coefficient of Variation)",
-            "Unit 4: Probability and Expected Value (Addition & Multiplication Theorems, Bayes Theorem)",
-            "Unit 5: Theoretical Distributions (Binomial, Poisson & Normal Distribution)",
-            "Unit 6: Correlation and Regression Analysis (Karl Pearson, Spearman Rank, Regression Lines)",
-            "Unit 7: Index Numbers (Laspeyres, Paasche, Fisher's Ideal Index, Cost of Living Index)"
-          ]
+            "Unit 1: Statistical Representation of Data (Sampling, Tables, Charts)", 
+            "Unit 2: Measures of Central Tendency (Mean, Median, Mode, GM, HM)", 
+            "Unit 3: Measures of Dispersion (Range, QD, MD, SD, Coefficient of Variation)", 
+            "Unit 4: Probability and Expected Value (Bayes Theorem)", 
+            "Unit 5: Theoretical Distributions (Binomial, Poisson & Normal)", 
+            "Unit 6: Correlation and Regression Analysis", 
+            "Unit 7: Index Numbers (Laspeyres, Paasche, Fisher, Cost of Living)"
+          ] 
         }
       ]
     },
@@ -898,105 +969,176 @@ const SYLLABUS_DEFAULT = {
       id: "ca_p4",
       name: "Paper 4: Business Economics (100 Marks)",
       chapters: [
-        {
-          id: "p4_c1",
-          name: "Ch 1: Introduction to Business Economics",
+        { 
+          id: "cap4_c1", 
+          name: "Ch 1: Introduction to Business Economics", 
           units: [
-            "Unit 1: Meaning, Scope & Nature of Business Economics (Micro vs Macro)",
-            "Unit 2: Basic Economic Problems & Role of Price Mechanism in Different Economies"
-          ]
+            "Unit 1: Meaning, Scope and Nature of Business Economics", 
+            "Unit 2: Basic Problems of an Economy & Role of Price Mechanism"
+          ] 
         },
-        {
-          id: "p4_c2",
-          name: "Ch 2: Theory of Demand and Supply",
+        { 
+          id: "cap4_c2", 
+          name: "Ch 2: Theory of Demand and Supply", 
           units: [
-            "Unit 1: Law of Demand, Elasticity of Demand (Price, Income, Cross) & Forecasting",
-            "Unit 2: Consumer Behaviour (Marginal Utility Analysis & Indifference Curve Approach)",
-            "Unit 3: Theory of Supply, Law of Supply & Elasticity of Supply",
-            "Unit 4: Market Equilibrium and Determination of Equilibrium Price"
-          ]
+            "Unit 1: Law of Demand and Elasticity of Demand", 
+            "Unit 2: Theory of Consumer Behaviour (Marginal Utility & Indifference Curves)", 
+            "Unit 3: Supply: Law of Supply and Elasticity of Supply", 
+            "Unit 4: Determination of Equilibrium Price"
+          ] 
         },
-        {
-          id: "p4_c3",
-          name: "Ch 3: Theory of Production and Cost",
+        { 
+          id: "cap4_c3", 
+          name: "Ch 3: Theory of Production and Cost", 
           units: [
-            "Unit 1: Theory of Production (Total, Average, Marginal Product, Laws of Returns, Isoquants)",
-            "Unit 2: Theory of Cost (Short Run & Long Run Cost Curves, Economies of Scale)"
-          ]
+            "Unit 1: Theory of Production (Laws of Returns, Isoquants)", 
+            "Unit 2: Theory of Cost (Short Run and Long Run Cost Curves)"
+          ] 
         },
-        {
-          id: "p4_c4",
-          name: "Ch 4: Price Determination in Different Markets",
+        { 
+          id: "cap4_c4", 
+          name: "Ch 4: Price Determination in Different Markets", 
           units: [
-            "Unit 1: Meaning & Classification of Market Structures",
-            "Unit 2: Perfect Competition: Short Run and Long Run Equilibrium",
-            "Unit 3: Monopoly: Equilibrium, Price Discrimination & Deadweight Loss",
-            "Unit 4: Monopolistic Competition and Oligopoly (Kinked Demand Curve, Cartels)"
-          ]
+            "Unit 1: Meaning and Classification of Market Structures", 
+            "Unit 2: Perfect Competition Equilibrium", 
+            "Unit 3: Monopoly: Equilibrium & Price Discrimination", 
+            "Unit 4: Monopolistic Competition and Oligopoly (Kinked Demand Curve)"
+          ] 
         },
-        {
-          id: "p4_c5",
-          name: "Ch 5: Determination of National Income",
+        { 
+          id: "cap4_c5", 
+          name: "Ch 5: Business Cycles", 
           units: [
-            "Unit 1: National Income Aggregates (GDP, GNP, NNP) & Measurement Methods",
+            "Unit 1: Meaning, Phases and Characteristics of Business Cycles", 
+            "Unit 2: Causes of Business Cycles (Internal vs External Factors)", 
+            "Unit 3: Economic Indicators & Business Decision Making"
+          ] 
+        },
+        { 
+          id: "cap4_c6", 
+          name: "Ch 6: Determination of National Income", 
+          units: [
+            "Unit 1: National Income Aggregates (GDP, GNP, NNP) & Measurement", 
             "Unit 2: Keynesian Two, Three and Four Sector Models of Income Determination"
-          ]
+          ] 
         },
-        {
-          id: "p4_c6",
-          name: "Ch 6: Public Finance",
+        { 
+          id: "cap4_c7", 
+          name: "Ch 7: Public Finance", 
           units: [
-            "Unit 1: Fiscal Functions: Allocation, Redistribution and Stabilization",
-            "Unit 2: Market Failure: Public Goods, Externalities, Asymmetric Information",
-            "Unit 3: Fiscal Policy: Government Budget, Fiscal Instruments & Deficit Financing"
-          ]
+            "Unit 1: Fiscal Functions: Allocation, Redistribution and Stabilization", 
+            "Unit 2: Market Failure: Public Goods, Externalities, Asymmetric Information", 
+            "Unit 3: Fiscal Policy: Government Budget, Taxes & Deficit Financing"
+          ] 
         },
-        {
-          id: "p4_c7",
-          name: "Ch 7: Money Market & Monetary Policy",
+        { 
+          id: "cap4_c8", 
+          name: "Ch 8: Money Market & Monetary Policy", 
           units: [
-            "Unit 1: Demand for and Supply of Money (Credit Creation by Banking System)",
-            "Unit 2: Monetary Policy: Objectives, Quantitative & Qualitative Instruments (Repo, CRR, SLR)"
-          ]
+            "Unit 1: Demand for and Supply of Money (Credit Creation by Banks)", 
+            "Unit 2: Monetary Policy: Objectives, Quantitative & Qualitative Instruments"
+          ] 
         },
-        {
-          id: "p4_c8",
-          name: "Ch 8: International Trade",
+        { 
+          id: "cap4_c9", 
+          name: "Ch 9: International Trade", 
           units: [
-            "Unit 1: Theories of International Trade (Absolute & Comparative Advantage)",
-            "Unit 2: Trade Policies: Tariffs and Non-Tariff Barriers",
-            "Unit 3: Exchange Rates: Determination, Regimes & Foreign Direct Investment (FDI/FII)"
-          ]
+            "Unit 1: Theories of Trade (Absolute and Comparative Advantage)", 
+            "Unit 2: Trade Policies: Tariffs and Non-Tariff Barriers", 
+            "Unit 3: Exchange Rates: Determination Regimes & FDI/FII Investments"
+          ] 
         },
-        {
-          id: "p4_c9",
-          name: "Ch 9: Indian Economy",
+        { 
+          id: "cap4_c10", 
+          name: "Ch 10: Indian Economy", 
           units: [
-            "Unit 1: Evolution of Indian Economy, Structural Reforms 1991 & Contemporary Trends"
-          ]
+            "Unit 1: Evolution of Indian Economy & 1991 Economic Reforms", 
+            "Unit 2: Contemporary Structural Trends, NITI Aayog & Growth Trajectory"
+          ] 
         }
+      ]
+    }
+  ],
+  cseet: [
+    {
+      id: "cs_p1",
+      name: "Paper 1: Business Communication (100 Marks)",
+      chapters: [
+        { id: "csp1_c1", name: "Ch 1: Essentials of Good English & Grammar", units: ["English Grammar: Parts of Speech, Tenses, Voice", "Sentence Construction, Punctuation & Common Grammatical Errors"] },
+        { id: "csp1_c2", name: "Ch 2: Vocabulary & Enrichment", units: ["Synonyms, Antonyms, Homophones & Idioms", "One-Word Substitution & Commonly Misspelled Words", "Abbreviations and Sentence Jumbles"] },
+        { id: "csp1_c3", name: "Ch 3: Business Communication & Listening Skills", units: ["Concept, Process & 7 Cs of Effective Communication", "Communication Barriers & Overcoming Strategies", "Listening Skills: Types, Barriers & Active Listening"] },
+        { id: "csp1_c4", name: "Ch 4: Business Correspondence & Digital Media", units: ["Business Letters: Inquiries, Complaints & Sales Letters", "Office Communication: Memos, Circulars & Notes", "Electronic Communication: Email Etiquette & Cyber Safety"] },
+        { id: "csp1_c5", name: "Ch 5: Common Business Terminologies", units: ["Commercial, Financial & Legal Glossary Terms"] }
+      ]
+    },
+    {
+      id: "cs_p2",
+      name: "Paper 2: Fundamentals of Accounting (100 Marks)",
+      chapters: [
+        { id: "csp2_c1", name: "Ch 1: Theoretical Framework & Principles", units: ["Meaning, Scope & Double Entry Bookkeeping Concepts", "Accounting Principles, Concepts & Conventions", "Capital vs Revenue Receipts and Payments"] },
+        { id: "csp2_c2", name: "Ch 2: Accounting Process & Books of Entry", units: ["Journal Entries & Subsidiary Books", "Ledger Posting & Trial Balance Verification", "Rectification of Errors & Suspense Account"] },
+        { id: "csp2_c3", name: "Ch 3: Bank Reconciliation Statement", units: ["Causes of Cash Book vs Pass Book Discrepancies", "Preparation of BRS with Adjusted Cash Book"] },
+        { id: "csp2_c4", name: "Ch 4: Depreciation and Amortization", units: ["Straight Line Method (SLM) & Written Down Value (WDV)", "Accounting for Asset Disposal & Provisions"] },
+        { id: "csp2_c5", name: "Ch 5: Preparation of Final Accounts", units: ["Trading and Profit & Loss Account of Sole Proprietorship", "Balance Sheet Adjustments (Bad Debts, Accruals, Prepaid)"] },
+        { id: "csp2_c6", name: "Ch 6: Partnership & LLP Accounts", units: ["Partnership Deeds & Profit and Loss Appropriation", "Admission, Retirement & Death Accounting Adjustments", "Basics of LLP Accounting Requirements"] },
+        { id: "csp2_c7", name: "Ch 7: Company Accounts", units: ["Issue, Forfeiture and Re-issue of Shares", "Issue of Debentures & Terms of Issue"] },
+        { id: "csp2_c8", name: "Ch 8: Accounting for Non-Profit Organizations", units: ["Receipts and Payments Account Essentials", "Income and Expenditure Account & Balance Sheet Prep"] }
+      ]
+    },
+    {
+      id: "cs_p3",
+      name: "Paper 3: Economic & Business Environment (100 Marks)",
+      chapters: [
+        { id: "csp3_c1", name: "Part A - Ch 1: Demand, Supply & Market Competition", units: ["Law of Demand, Elasticity & Consumer Equilibrium", "Law of Supply & Equilibrium Price Determination", "Forms of Market Competition (Perfect, Monopoly, Oligopoly)"] },
+        { id: "csp3_c2", name: "Part A - Ch 2: National Income Accounting", units: ["National Income Aggregates (GDP, GNP, NDP, NNP)", "Methods of Measurement & Practical Indian Challenges"] },
+        { id: "csp3_c3", name: "Part A - Ch 3: Indian Union Budget", units: ["Key Budget Concepts: Revenue vs Capital Budget", "Fiscal Deficit, Revenue Deficit & Fiscal Policy"] },
+        { id: "csp3_c4", name: "Part A - Ch 4: Indian Financial Markets", units: ["Banking Sector & Role of Reserve Bank of India", "Capital Market: Primary Market, Secondary Market & SEBI"] },
+        { id: "csp3_c5", name: "Part A - Ch 5: Indian Economy Overview", units: ["Sectoral Performance: Agriculture, Industry, Services", "Contemporary Economic Reforms & Development Trends"] },
+        { id: "csp3_c6", name: "Part B - Ch 6: Entrepreneurship Scenario", units: ["Make in India, Start-Up India & Skill India Initiatives", "Bottlenecks to Entrepreneurial Growth in India"] },
+        { id: "csp3_c7", name: "Part B - Ch 7: Business Environment", units: ["Features, Factors & Types of Business Environment", "Ease of Doing Business Reforms & Policies"] },
+        { id: "csp3_c8", name: "Part B - Ch 8: Key Government Institutions", units: ["NITI Aayog: Objectives and Structure", "Regulatory Bodies: MCA, SEBI, RBI, CCI, IBBI"] },
+        { id: "csp3_c9", name: "Part B - Ch 9: Global Environment & International Trade", units: ["Foreign Direct Investment (FDI) & FPI in India", "International Organizations: WTO, World Bank, IMF"] },
+        { id: "csp3_c10", name: "Part B - Ch 10: Environmental Governance & AI", units: ["Environmental Governance & Sustainable Development", "Artificial Intelligence (AI) in Business Environment", "Elements and Significance of Corporate Governance"] }
+      ]
+    },
+    {
+      id: "cs_p4",
+      name: "Paper 4: Business Laws & Management (100 Marks)",
+      chapters: [
+        { id: "csp4_c1", name: "Part A - Ch 1: Introduction to Law & Indian System", units: ["Meaning and Sources of Law in India", "Hierarchy of Courts & Administration of Justice"] },
+        { id: "csp4_c2", name: "Part A - Ch 2: Elements of Company Law", units: ["Company Meaning, Corporate Veil & Characteristics", "Types of Companies (Private, Public, OPC, Sec 8)", "Board of Directors, Meetings & Duties of Company Secretary"] },
+        { id: "csp4_c3", name: "Part A - Ch 3: Elements of Law of Contracts", units: ["Essentials of a Valid Contract (Offer, Acceptance, Consideration)", "Capacity, Free Consent, Legality of Object & Void Agreements", "Performance, Discharge & Remedies for Breach"] },
+        { id: "csp4_c4", name: "Part A - Ch 4: Partnership & LLP Laws", units: ["General Nature of Partnership & Rights/Duties of Partners", "Limited Liability Partnership Act 2008 Salient Features"] },
+        { id: "csp4_c5", name: "Part A - Ch 5: Sale of Goods & Negotiable Instruments", units: ["Contract of Sale, Conditions & Warranties, Caveat Emptor", "Negotiable Instruments: Promissory Notes, Bills & Cheques", "Cheque Dishonour Penalties (Sec 138-142)"] },
+        { id: "csp4_c6", name: "Part B - Ch 6: Introduction to Management", units: ["Concept, Nature, Scope & Importance of Management", "Management Levels & Key Managerial Skills"] },
+        { id: "csp4_c7", name: "Part B - Ch 7: Functions of Management", units: ["Planning & Organising Structures", "Staffing, Directing & Controlling Processes"] },
+        { id: "csp4_c8", name: "Part B - Ch 8: Principles of Management & Modern Approaches", units: ["Henry Fayol 14 Principles of Management", "F.W. Taylor Scientific Management & Modern Approaches"] },
+        { id: "csp4_c9", name: "Part B - Ch 9: Management Knowledge for Company Secretaries", units: ["Strategic Management Basics & Leadership Styles", "Decision-Making Frameworks & Professional Ethics"] }
       ]
     }
   ]
 };
 
 /* =========================================================================
-   APPLICATION STATE & PERSISTENCE
+   APPLICATION STATE ENGINE
    ========================================================================= */
-const DB_KEY = "STUDY_PLANNER_PRO_STATE_V5";
+const DB_KEY = "STUDY_PLANNER_MASTER_V9";
 
 let STATE = {
+  userName: "",
   examDates: {
     boards: "2027-02-15",
-    ca: "2027-06-20"
+    ca: "2027-06-20",
+    cseet: "2026-11-10"
   },
-  ticks: {},      // Format: { [key]: stageNumber (1 to 5) }
-  targets: [],    // Array of { id, text, stream, scope, done }
-  backlog: [],    // Array of { id, text, priority, created }
-  tests: [],      // Array of { id, stream, subject, score, total, date }
-  studySeconds: 0,
+  ticks: {},       // Format: { [key]: stageNumber (1 to 4) }
+  targets: [],     // Array of { id, text, stream, scope, done, dateAdded }
+  completedLog: [],// Array of { id, text, stream, dateCompleted }
+  backlog: [],     // Array of { id, text, priority, created }
+  tests: [],       // Array of { id, stream, subject, topic, score, total, date }
+  studySeconds: 0, // Total logged focus
   streak: 1,
-  lastStudyDate: new Date().toISOString().slice(0, 10)
+  lastActiveDate: new Date().toISOString().slice(0, 10)
 };
 
 function loadState() {
@@ -1008,36 +1150,94 @@ function loadState() {
       console.error("State recovery failed", e);
     }
   }
-  updateStreakEngine();
+
+  handleMidnightRollover();
+
+  if (!STATE.userName) {
+    setTimeout(() => openModal('nameModal'), 500);
+  } else {
+    updateUserDisplay();
+  }
 }
 
 function saveState() {
   localStorage.setItem(DB_KEY, JSON.stringify(STATE));
 }
 
-function updateStreakEngine() {
+function saveUserName() {
+  const name = document.getElementById("userNameInput").value.trim();
+  if (!name) return;
+  STATE.userName = name;
+  saveState();
+  updateUserDisplay();
+  closeModal('nameModal');
+}
+
+function updateUserDisplay() {
+  const el = document.getElementById("headerUserName");
+  if (el) el.innerText = STATE.userName || "Student";
+}
+
+/* =========================================================================
+   MIDNIGHT DATE ROLLOVER ENGINE
+   ========================================================================= */
+function handleMidnightRollover() {
   const today = new Date().toISOString().slice(0, 10);
-  if (STATE.lastStudyDate !== today) {
-    const last = new Date(STATE.lastStudyDate);
-    const now = new Date(today);
-    const diffDays = Math.round((now - last) / (1000 * 3600 * 24));
+  
+  if (STATE.lastActiveDate !== today) {
+    const last = new Date(STATE.lastActiveDate);
+    const current = new Date(today);
+    const diffDays = Math.round((current - last) / (1000 * 3600 * 24));
+
+    const remainingTargets = [];
+    STATE.targets.forEach(t => {
+      if (t.scope === 'daily') {
+        if (t.done) {
+          STATE.completedLog.unshift({
+            id: t.id,
+            text: t.text,
+            stream: t.stream,
+            dateCompleted: STATE.lastActiveDate
+          });
+        } else {
+          // Push uncompleted daily tasks into Backlog directly
+          STATE.backlog.push({
+            id: Date.now() + Math.random(),
+            text: `[Rollover] ${t.text}`,
+            priority: 'high',
+            created: Date.now()
+          });
+        }
+      } else {
+        remainingTargets.push(t);
+      }
+    });
+
+    STATE.targets = remainingTargets;
+
     if (diffDays === 1) {
-      // Streak maintained
+      STATE.streak += 1;
     } else if (diffDays > 1) {
       STATE.streak = 1;
     }
+
+    STATE.lastActiveDate = today;
+    saveState();
   }
+
   document.getElementById("streakBadge").innerHTML = `🔥 ${STATE.streak}d`;
 }
 
 /* =========================================================================
-   KEY GENERATION & TICK LOGIC
+   KEY GENERATION & 4-TICK SYSTEM
+   - 12th Boards: stream_subId_chapterIndex
+   - CAFC/CSEET: stream_subId_chpId_unitIndex
    ========================================================================= */
 function getItemKey(stream, subId, p1, p2) {
   if (stream === 'boards_12th') {
     return `${stream}_${subId}_${p1}`; // p1 is chapterIndex
   } else {
-    return `${stream}_${subId}_${p1}_${p2}`; // p1 is chpId, p2 is unitIndex
+    return `${stream}_${subId}_${p1}_${p2}`; // p1 is chpId, p2 is unitIdx
   }
 }
 
@@ -1057,14 +1257,13 @@ function handleTickClick(key, stageClicked) {
 }
 
 function triggerCelebration(stage) {
-  const titles = ["", "Lecture Completed!", "Self Study Finished!", "Revision 1 Done!", "Revision 2 Perfected!", "Mastery Reached! 🌟"];
+  const titles = ["", "Lecture Complete!", "Self Study Finished!", "Revision 1 Done!", "Mastery Reached! 🌟"];
   const subs = [
     "",
-    "Solid start! Consolidate notes and write out formula cards.",
-    "Concept internalized! Keep this momentum.",
-    "First active recall cycle secured.",
-    "Exam-level retention reinforced.",
-    "Flawless mastery. Top percentile standard!"
+    "Great foundation! Concept notes captured.",
+    "Practice drills and numericals consolidated.",
+    "First active recall cycle solidified.",
+    "Exam-standard mastery achieved. Outstanding!"
   ];
   document.getElementById("celebTitle").innerText = titles[stage] || "Progress Logged!";
   document.getElementById("celebBody").innerText = subs[stage] || "Every step forward compounds.";
@@ -1080,6 +1279,7 @@ function dismissCelebration() {
    ========================================================================= */
 let currentNav = 'overview';
 let portionStreamView = 'boards_12th';
+let testStreamFilter = 'boards_12th';
 
 function switchNav(nav) {
   currentNav = nav;
@@ -1107,7 +1307,7 @@ function capitalize(s) {
 }
 
 /* =========================================================================
-   VIEW: OVERVIEW (DASHBOARD)
+   CALCULATIONS & PROGRESS METRICS
    ========================================================================= */
 function getDaysRemaining(dateStr) {
   if (!dateStr) return 0;
@@ -1118,23 +1318,23 @@ function getDaysRemaining(dateStr) {
 }
 
 function calculateProgress(stream) {
-  const subjects = SYLLABUS_DEFAULT[stream];
+  const subjects = SYLLABUS_DEFAULT[stream] || [];
   let totalPoints = 0;
   let earnedPoints = 0;
 
   subjects.forEach(sub => {
     if (stream === 'boards_12th') {
       sub.chapters.forEach((ch, idx) => {
-        const key = getItemKey(stream, sub.id, idx);
+        const key = getItemKey('boards_12th', sub.id, idx);
         earnedPoints += (STATE.ticks[key] || 0);
-        totalPoints += 5;
+        totalPoints += 4;
       });
     } else {
       sub.chapters.forEach(chp => {
         chp.units.forEach((u, uIdx) => {
           const key = getItemKey(stream, sub.id, chp.id, uIdx);
           earnedPoints += (STATE.ticks[key] || 0);
-          totalPoints += 5;
+          totalPoints += 4;
         });
       });
     }
@@ -1143,11 +1343,17 @@ function calculateProgress(stream) {
   return totalPoints === 0 ? 0 : Math.round((earnedPoints / totalPoints) * 100);
 }
 
+/* =========================================================================
+   VIEW: DASHBOARD (OVERVIEW)
+   ========================================================================= */
 function renderOverviewPage() {
   const bDays = getDaysRemaining(STATE.examDates.boards);
   const cDays = getDaysRemaining(STATE.examDates.ca);
+  const csDays = getDaysRemaining(STATE.examDates.cseet);
+
   const bPct = calculateProgress('boards_12th');
   const cPct = calculateProgress('cafc');
+  const csPct = calculateProgress('cseet');
 
   const container = document.getElementById("tabOverview");
   container.innerHTML = `
@@ -1160,12 +1366,17 @@ function renderOverviewPage() {
       </div>
       <div class="cd-card ca" onclick="openModal('datesModal')">
         <div class="cd-days">${cDays}</div>
-        <div class="cd-label" style="color:var(--ca-accent)">CA Foundation</div>
+        <div class="cd-label" style="color:var(--ca-accent)">CAFC</div>
         <div class="cd-sub">${STATE.examDates.ca || 'Set Date'}</div>
+      </div>
+      <div class="cd-card cseet" onclick="openModal('datesModal')">
+        <div class="cd-days">${csDays}</div>
+        <div class="cd-label" style="color:var(--cseet-accent)">CSEET</div>
+        <div class="cd-sub">${STATE.examDates.cseet || 'Set Date'}</div>
       </div>
     </div>
 
-    <!-- CURRICULUM OVERVIEW -->
+    <!-- CURRICULUM PROGRESS BARS -->
     <div class="card">
       <div class="card-header">
         <span class="card-title">Curriculum Progress</span>
@@ -1174,7 +1385,7 @@ function renderOverviewPage() {
 
       <div>
         <div style="display:flex;justify-content:space-between;font-size:12px;font-weight:700;margin-bottom:2px;">
-          <span>12th HSC Commerce</span>
+          <span>12th HSC Commerce (Balbharati Chapters)</span>
           <span style="color:var(--boards-accent);">${bPct}%</span>
         </div>
         <div class="prog-track">
@@ -1182,37 +1393,56 @@ function renderOverviewPage() {
         </div>
       </div>
 
-      <div style="margin-top:14px;">
+      <div style="margin-top:12px;">
         <div style="display:flex;justify-content:space-between;font-size:12px;font-weight:700;margin-bottom:2px;">
-          <span>CA Foundation</span>
+          <span>CA Foundation (ICAI Scheme)</span>
           <span style="color:var(--ca-accent);">${cPct}%</span>
         </div>
         <div class="prog-track">
           <div class="prog-bar fill-ca" style="width: ${cPct}%;"></div>
         </div>
       </div>
+
+      <div style="margin-top:12px;">
+        <div style="display:flex;justify-content:space-between;font-size:12px;font-weight:700;margin-bottom:2px;">
+          <span>CSEET (4 Papers x 100M)</span>
+          <span style="color:var(--cseet-accent);">${csPct}%</span>
+        </div>
+        <div class="prog-track">
+          <div class="prog-bar fill-cseet" style="width: ${csPct}%;"></div>
+        </div>
+      </div>
     </div>
 
-    <!-- STOPWATCH -->
+    <!-- STOPWATCH WITH DIRECT TIME MODIFICATION -->
     <div class="card">
       <div class="card-header">
         <span class="card-title">Daily Focus Stopwatch</span>
-        <span class="tag tag-boards">Deep Work</span>
+        <span class="tag tag-boards">${isTimerRunning ? 'Active' : 'Paused'}</span>
       </div>
       <div class="timer-display" id="stopwatchDisplay">${formatTime(timerSeconds)}</div>
+      <div class="timer-hint">Track live study or adjust with 1-tap buttons below</div>
+      
       <div class="timer-controls">
         <button class="btn btn-brand" id="btnTimerToggle" onclick="toggleTimer()">
-          ${isTimerRunning ? 'Pause Session' : 'Start Focus'}
+          ${isTimerRunning ? 'Stop Focus' : 'Start Focus'}
         </button>
         <button class="btn btn-dark" onclick="resetTimer()">Reset</button>
-        <button class="btn btn-dark" onclick="openModal('adjustTimerModal')">± Adjust</button>
+        <button class="btn btn-dark" onclick="openModal('adjustTimerModal')">⏱️ Add / Subtract</button>
+      </div>
+
+      <div class="pill-grid" style="margin-top:14px;">
+        <button type="button" class="pill-btn" onclick="quickAdjustMinutes(15)">+15 min</button>
+        <button type="button" class="pill-btn" onclick="quickAdjustMinutes(30)">+30 min</button>
+        <button type="button" class="pill-btn" onclick="quickAdjustMinutes(60)">+1 hr</button>
+        <button type="button" class="pill-btn" style="color:var(--danger);" onclick="quickAdjustMinutes(-15)">-15 min</button>
       </div>
     </div>
 
-    <!-- DAILY TARGETS -->
+    <!-- TODAY'S TARGETS -->
     <div class="card">
       <div class="card-header">
-        <span class="card-title">Today's Checkpoints</span>
+        <span class="card-title">Today's Checkpoints (Resets at 12 AM)</span>
         <button class="tag" style="background:var(--surface-elevated);border:1px solid var(--surface-border);color:var(--text-muted);" onclick="openTargetModal('daily')">＋ Add</button>
       </div>
       <div id="overviewTargetsList">
@@ -1234,7 +1464,7 @@ function renderOverviewPage() {
 }
 
 /* =========================================================================
-   VIEW: PORTIONS (12th Direct Chapters & CAFC Chapter -> Unit Drill Down)
+   VIEW: PORTIONS (12th Direct Chapters vs CAFC/CSEET Chapter -> Unit)
    ========================================================================= */
 let expandedSubs = {};
 let expandedChps = {};
@@ -1256,18 +1486,25 @@ function setPortionStream(stream) {
 
 function renderPortionsPage() {
   const container = document.getElementById("tabPortions");
-  const subjects = SYLLABUS_DEFAULT[portionStreamView];
+  const subjects = SYLLABUS_DEFAULT[portionStreamView] || [];
+  
   const isBoards = portionStreamView === 'boards_12th';
+  const isCa = portionStreamView === 'cafc';
+  const isCseet = portionStreamView === 'cseet';
+
+  let fillClass = isBoards ? 'fill-boards' : isCa ? 'fill-ca' : 'fill-cseet';
+  let accentVar = isBoards ? 'var(--boards-accent)' : isCa ? 'var(--ca-accent)' : 'var(--cseet-accent)';
 
   let html = `
     <!-- STREAM SELECTOR -->
     <div class="segmented">
       <button class="segmented-btn ${isBoards ? 'active boards' : ''}" onclick="setPortionStream('boards_12th')">12th Boards</button>
-      <button class="segmented-btn ${!isBoards ? 'active ca' : ''}" onclick="setPortionStream('cafc')">CA Foundation</button>
+      <button class="segmented-btn ${isCa ? 'active ca' : ''}" onclick="setPortionStream('cafc')">CA Foundation</button>
+      <button class="segmented-btn ${isCseet ? 'active cseet' : ''}" onclick="setPortionStream('cseet')">CSEET</button>
     </div>
 
-    <div style="font-size:11px;color:var(--text-dim);margin-bottom:8px;padding:0 2px;">
-      ${isBoards ? 'HSC Balbharati Chapters.' : 'ICAI Study Modules (Click chapters to view units).'} Stages: <b>1</b>:Lecture • <b>2</b>:Self • <b>3</b>:Rev 1 • <b>4</b>:Rev 2 • <b>5</b>:Mastered
+    <div style="font-size:11px;color:var(--text-dim);margin-bottom:10px;padding:0 2px;">
+      ${isBoards ? '<b>Direct Balbharati Chapters:</b>' : '<b>Hierarchical Modules:</b>'} <span style="color:var(--stage-1);">1:Lecture</span> • <span style="color:var(--stage-2);">2:Self Study</span> • <span style="color:var(--stage-3);">3:Rev 1</span> • <span style="color:var(--stage-4);">4:Mastered</span>
     </div>
   `;
 
@@ -1279,20 +1516,20 @@ function renderPortionsPage() {
       sub.chapters.forEach((ch, idx) => {
         const key = getItemKey('boards_12th', sub.id, idx);
         subEarned += (STATE.ticks[key] || 0);
-        subTotal += 5;
+        subTotal += 4;
       });
     } else {
       sub.chapters.forEach(chp => {
         chp.units.forEach((u, uIdx) => {
-          const key = getItemKey('cafc', sub.id, chp.id, uIdx);
+          const key = getItemKey(portionStreamView, sub.id, chp.id, uIdx);
           subEarned += (STATE.ticks[key] || 0);
-          subTotal += 5;
+          subTotal += 4;
         });
       });
     }
 
     const subPct = subTotal > 0 ? Math.round((subEarned / subTotal) * 100) : 0;
-    const isSubOpen = expandedSubs[sub.id] !== false; // open by default
+    const isSubOpen = expandedSubs[sub.id] !== false;
 
     html += `
       <div class="sub-card">
@@ -1300,10 +1537,10 @@ function renderPortionsPage() {
           <div class="sub-info">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
               <span class="sub-title">${sub.name}</span>
-              <span class="sub-pct" style="color:${isBoards ? 'var(--boards-accent)' : 'var(--ca-accent)'}">${subPct}%</span>
+              <span class="sub-pct" style="color:${accentVar}">${subPct}%</span>
             </div>
             <div class="prog-track" style="margin:0;">
-              <div class="prog-bar ${isBoards ? 'fill-boards' : 'fill-ca'}" style="width:${subPct}%"></div>
+              <div class="prog-bar ${fillClass}" style="width:${subPct}%"></div>
             </div>
           </div>
           <div style="font-size:14px;color:var(--text-dim);transform:rotate(${isSubOpen ? '90deg' : '0deg'});transition:transform 0.2s;">›</div>
@@ -1312,7 +1549,7 @@ function renderPortionsPage() {
         ${isSubOpen ? `
           <div class="sub-content">
             ${isBoards ? 
-              // 12TH: DIRECT BALBHARATI CHAPTERS
+              // 12TH: DIRECT CHAPTER LISTING (NO UNITS)
               sub.chapters.map((chName, chIdx) => {
                 const key = getItemKey('boards_12th', sub.id, chIdx);
                 const currentStage = STATE.ticks[key] || 0;
@@ -1320,7 +1557,7 @@ function renderPortionsPage() {
                   <div class="item-card">
                     <div class="item-name">${chName}</div>
                     <div class="tick-strip">
-                      ${[1,2,3,4,5].map(st => `
+                      ${[1, 2, 3, 4].map(st => `
                         <div class="tick-box ${currentStage >= st ? 'done-' + st : ''}"
                              onclick="handleTickClick('${key}', ${st})"
                              title="Stage ${st}">
@@ -1332,12 +1569,12 @@ function renderPortionsPage() {
                 `;
               }).join('')
               :
-              // CAFC: HIERARCHICAL CHAPTER -> UNITS
+              // CAFC & CSEET: HIERARCHICAL CHAPTER -> UNITS
               sub.chapters.map(chp => {
                 let chpEarned = 0;
-                let chpTotal = chp.units.length * 5;
+                let chpTotal = chp.units.length * 4;
                 chp.units.forEach((u, uIdx) => {
-                  const key = getItemKey('cafc', sub.id, chp.id, uIdx);
+                  const key = getItemKey(portionStreamView, sub.id, chp.id, uIdx);
                   chpEarned += (STATE.ticks[key] || 0);
                 });
                 const chpPct = chpTotal > 0 ? Math.round((chpEarned / chpTotal) * 100) : 0;
@@ -1348,7 +1585,7 @@ function renderPortionsPage() {
                     <div class="chp-header" onclick="toggleChpAccordion('${chp.id}')">
                       <div class="chp-title">${chp.name}</div>
                       <div style="display:flex;align-items:center;">
-                        <span class="chp-pct" style="color:var(--ca-accent)">${chpPct}%</span>
+                        <span class="chp-pct" style="color:${accentVar}">${chpPct}%</span>
                         <span style="font-size:12px;color:var(--text-dim);transform:rotate(${isChpOpen ? '90deg' : '0deg'});transition:transform 0.2s;">›</span>
                       </div>
                     </div>
@@ -1356,13 +1593,13 @@ function renderPortionsPage() {
                     ${isChpOpen ? `
                       <div class="units-list">
                         ${chp.units.map((unitName, uIdx) => {
-                          const key = getItemKey('cafc', sub.id, chp.id, uIdx);
+                          const key = getItemKey(portionStreamView, sub.id, chp.id, uIdx);
                           const currentStage = STATE.ticks[key] || 0;
                           return `
                             <div class="item-card">
-                              <div class="item-name" style="color:var(--text-muted);">${unitName}</div>
+                              <div class="item-name">${unitName}</div>
                               <div class="tick-strip">
-                                ${[1,2,3,4,5].map(st => `
+                                ${[1, 2, 3, 4].map(st => `
                                   <div class="tick-box ${currentStage >= st ? 'done-' + st : ''}"
                                        onclick="handleTickClick('${key}', ${st})"
                                        title="Stage ${st}">
@@ -1389,7 +1626,7 @@ function renderPortionsPage() {
 }
 
 /* =========================================================================
-   VIEW: BACKLOG MANAGER
+   VIEW: BACKLOG ENGINE
    ========================================================================= */
 function renderBacklogPage() {
   const container = document.getElementById("tabBacklog");
@@ -1400,7 +1637,7 @@ function renderBacklogPage() {
         <button class="tag tag-high">${STATE.backlog.length} Pending</button>
       </div>
       <div style="display:flex;gap:6px;margin-bottom:12px;">
-        <input type="text" class="form-input" id="newBacklogText" placeholder="Missed lecture, exercise backlog, or theory topic..."/>
+        <input type="text" class="form-input" id="newBacklogText" placeholder="Missed lecture, exercise backlog, or formula cards..."/>
         <select class="form-input" id="newBacklogPri" style="width:110px;">
           <option value="high">High</option>
           <option value="med" selected>Medium</option>
@@ -1428,7 +1665,7 @@ function addBacklogItem() {
   const txt = document.getElementById("newBacklogText").value.trim();
   const pri = document.getElementById("newBacklogPri").value;
   if (!txt) return;
-  STATE.backlog.push({ text: txt, priority: pri, created: Date.now() });
+  STATE.backlog.push({ id: Date.now(), text: txt, priority: pri, created: Date.now() });
   saveState();
   renderBacklogPage();
 }
@@ -1456,33 +1693,82 @@ function convertBacklogToTarget(idx) {
 /* =========================================================================
    VIEW: TESTS & MOCK TRACKER
    ========================================================================= */
+function setTestStreamFilter(str) {
+  testStreamFilter = str;
+  renderTestsPage();
+}
+
 function renderTestsPage() {
   const container = document.getElementById("tabTests");
+  const filteredTests = STATE.tests.filter(t => t.stream === testStreamFilter);
 
   let totalScored = 0;
   let totalMax = 0;
-  STATE.tests.forEach(t => {
+  filteredTests.forEach(t => {
     totalScored += Number(t.score);
     totalMax += Number(t.total);
   });
   const overallAvg = totalMax > 0 ? Math.round((totalScored / totalMax) * 100) : 0;
 
+  const subStats = {};
+  filteredTests.forEach(t => {
+    if (!subStats[t.subject]) subStats[t.subject] = { score: 0, total: 0, count: 0 };
+    subStats[t.subject].score += Number(t.score);
+    subStats[t.subject].total += Number(t.total);
+    subStats[t.subject].count += 1;
+  });
+
+  const isB = testStreamFilter === 'boards_12th';
+  const isC = testStreamFilter === 'cafc';
+  const isCs = testStreamFilter === 'cseet';
+
   container.innerHTML = `
+    <!-- STREAM SELECTOR -->
+    <div class="segmented">
+      <button class="segmented-btn ${isB ? 'active boards' : ''}" onclick="setTestStreamFilter('boards_12th')">12th Boards</button>
+      <button class="segmented-btn ${isC ? 'active ca' : ''}" onclick="setTestStreamFilter('cafc')">CA Foundation</button>
+      <button class="segmented-btn ${isCs ? 'active cseet' : ''}" onclick="setTestStreamFilter('cseet')">CSEET</button>
+    </div>
+
     <div class="analytics-banner">
       <div class="stat-card">
-        <div class="stat-val" style="color:var(--boards-accent);">${STATE.tests.length}</div>
-        <div class="stat-lbl">Tests Taken</div>
+        <div class="stat-val" style="color:var(--boards-accent);">${filteredTests.length}</div>
+        <div class="stat-lbl">Tests Logged</div>
       </div>
       <div class="stat-card">
         <div class="stat-val" style="color:var(--success);">${overallAvg}%</div>
         <div class="stat-lbl">Aggregate %</div>
       </div>
       <div class="stat-card">
-        <div class="stat-val" style="color:var(--ca-accent);">${STATE.tests.filter(t => (t.score/t.total) >= 0.5).length}</div>
-        <div class="stat-lbl">Cleared (≥50%)</div>
+        <div class="stat-val" style="color:var(--ca-accent);">${filteredTests.filter(t => (t.score/t.total) >= 0.5).length}</div>
+        <div class="stat-lbl">Passed (≥50%)</div>
       </div>
     </div>
 
+    <!-- SUBJECT AVERAGES -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">Subject-Wise Performance Averages</span>
+      </div>
+      ${Object.keys(subStats).length === 0 ? '<div style="font-size:12px;color:var(--text-dim);text-align:center;padding:10px;">Log tests to view subject averages.</div>' : ''}
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        ${Object.keys(subStats).map(sName => {
+          const sObj = subStats[sName];
+          const sPct = Math.round((sObj.score / sObj.total) * 100);
+          return `
+            <div>
+              <div style="display:flex;justify-content:space-between;font-size:12px;font-weight:700;margin-bottom:2px;">
+                <span>${sName} (${sObj.count} ${sObj.count === 1 ? 'test' : 'tests'})</span>
+                <span style="color:${sPct >= 50 ? 'var(--success)' : 'var(--danger)'}">${sPct}%</span>
+              </div>
+              <div class="prog-track" style="margin:0;"><div class="prog-bar ${sPct >= 50 ? 'fill-cseet' : 'fill-boards'}" style="width:${sPct}%"></div></div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+    </div>
+
+    <!-- TEST LOGS -->
     <div class="card">
       <div class="card-header">
         <span class="card-title">Assessment History</span>
@@ -1490,24 +1776,24 @@ function renderTestsPage() {
       </div>
 
       <div>
-        ${STATE.tests.length === 0 ? '<div style="font-size:12px;color:var(--text-dim);text-align:center;padding:16px;">No tests recorded yet. Log prelims and chapter tests!</div>' : ''}
-        ${STATE.tests.map((t, idx) => {
+        ${filteredTests.length === 0 ? '<div style="font-size:12px;color:var(--text-dim);text-align:center;padding:16px;">No test records found for this course.</div>' : ''}
+        ${filteredTests.map((t) => {
           const pct = Math.round((t.score / t.total) * 100);
           return `
             <div class="target-item" style="justify-content:space-between;">
               <div>
                 <div style="display:flex;align-items:center;gap:6px;">
-                  <span class="tag ${t.stream === '12th' ? 'tag-boards' : 'tag-ca'}">${t.stream}</span>
+                  <span class="tag ${t.stream === 'boards_12th' ? 'tag-boards' : t.stream === 'cafc' ? 'tag-ca' : 'tag-cseet'}">${t.stream === 'boards_12th' ? '12th' : t.stream.toUpperCase()}</span>
                   <span style="font-size:13px;font-weight:700;">${t.subject}</span>
                 </div>
-                <div style="font-size:10px;color:var(--text-dim);margin-top:2px;">${t.date}</div>
+                <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">${t.topic || 'General Mock'} • ${t.date}</div>
               </div>
               <div style="display:flex;align-items:center;gap:10px;">
                 <div style="text-align:right;">
                   <div style="font-size:13px;font-weight:800;color:${pct >= 50 ? 'var(--success)' : 'var(--danger)'}">${t.score}/${t.total}</div>
                   <div style="font-size:10px;color:var(--text-dim);">${pct}%</div>
                 </div>
-                <button class="target-delete" onclick="removeTestRecord(${idx})">✕</button>
+                <button class="target-delete" onclick="removeTestRecord(${t.id})">✕</button>
               </div>
             </div>
           `;
@@ -1517,9 +1803,17 @@ function renderTestsPage() {
   `;
 }
 
+function populateTestSubjects() {
+  const stream = document.getElementById("testStream").value;
+  const subjects = SYLLABUS_DEFAULT[stream] || [];
+  const select = document.getElementById("testSubjectSelect");
+  select.innerHTML = subjects.map(s => `<option value="${s.name}">${s.name}</option>`).join('');
+}
+
 function submitTestRecord() {
   const stream = document.getElementById("testStream").value;
-  const subject = document.getElementById("testSubject").value.trim();
+  const subject = document.getElementById("testSubjectSelect").value;
+  const topic = document.getElementById("testTopic").value.trim();
   const score = document.getElementById("testScore").value;
   const total = document.getElementById("testTotal").value;
 
@@ -1529,6 +1823,7 @@ function submitTestRecord() {
     id: Date.now(),
     stream,
     subject,
+    topic: topic || 'Mock Assessment',
     score: Number(score),
     total: Number(total),
     date: new Date().toISOString().slice(0, 10)
@@ -1539,8 +1834,8 @@ function submitTestRecord() {
   renderTestsPage();
 }
 
-function removeTestRecord(idx) {
-  STATE.tests.splice(idx, 1);
+function removeTestRecord(id) {
+  STATE.tests = STATE.tests.filter(t => t.id !== id);
   saveState();
   renderTestsPage();
 }
@@ -1552,12 +1847,13 @@ function renderStatsPage() {
   const container = document.getElementById("tabStats");
   const bPct = calculateProgress('boards_12th');
   const cPct = calculateProgress('cafc');
+  const csPct = calculateProgress('cseet');
   const totalHours = (STATE.studySeconds / 3600).toFixed(1);
 
   container.innerHTML = `
     <div class="card">
       <div class="card-header">
-        <span class="card-title">Productivity Metrics</span>
+        <span class="card-title">Study Productivity</span>
       </div>
       <div class="countdown-grid" style="margin-top:0;">
         <div class="stat-card">
@@ -1568,34 +1864,84 @@ function renderStatsPage() {
           <div class="stat-val" style="color:var(--boards-accent);">${totalHours} hrs</div>
           <div class="stat-lbl">Focus Logged</div>
         </div>
+        <div class="stat-card">
+          <div class="stat-val" style="color:var(--cseet-accent);">${STATE.completedLog.length}</div>
+          <div class="stat-lbl">Tasks Finished</div>
+        </div>
       </div>
     </div>
 
     <div class="card">
       <div class="card-header">
-        <span class="card-title">Curriculum Progress Overview</span>
+        <span class="card-title">Curriculum Progress Master</span>
       </div>
       <div style="font-size:13px;margin-bottom:12px;">
         <div style="display:flex;justify-content:space-between;margin-bottom:4px;font-weight:700;">
-          <span>12th HSC Commerce Mastery</span>
+          <span>12th HSC Commerce</span>
           <span style="color:var(--boards-accent);">${bPct}%</span>
         </div>
         <div class="prog-track"><div class="prog-bar fill-boards" style="width:${bPct}%;"></div></div>
       </div>
 
-      <div style="font-size:13px;margin-top:16px;">
+      <div style="font-size:13px;margin-bottom:12px;">
         <div style="display:flex;justify-content:space-between;margin-bottom:4px;font-weight:700;">
-          <span>CAFC Syllabus Mastery</span>
+          <span>CA Foundation (ICAI Scheme)</span>
           <span style="color:var(--ca-accent);">${cPct}%</span>
         </div>
         <div class="prog-track"><div class="prog-bar fill-ca" style="width:${cPct}%;"></div></div>
+      </div>
+
+      <div style="font-size:13px;">
+        <div style="display:flex;justify-content:space-between;margin-bottom:4px;font-weight:700;">
+          <span>CSEET (4 Papers x 100M)</span>
+          <span style="color:var(--cseet-accent);">${csPct}%</span>
+        </div>
+        <div class="prog-track"><div class="prog-bar fill-cseet" style="width:${csPct}%;"></div></div>
       </div>
     </div>
   `;
 }
 
 /* =========================================================================
-   TARGETS ENGINE: SMART HYBRID PICKER
+   COMPLETED TASKS ARCHIVE
+   ========================================================================= */
+function renderCompletedArchiveLog() {
+  const container = document.getElementById("completedLogContainer");
+  if (STATE.completedLog.length === 0) {
+    container.innerHTML = '<div style="font-size:12px;color:var(--text-dim);text-align:center;padding:20px;">No completed tasks archived yet. Check off daily targets to build your history!</div>';
+    return;
+  }
+
+  const groups = {};
+  STATE.completedLog.forEach(item => {
+    const d = item.dateCompleted || 'Earlier';
+    if (!groups[d]) groups[d] = [];
+    groups[d].push(item);
+  });
+
+  let html = '';
+  Object.keys(groups).sort().reverse().forEach(dateKey => {
+    html += `
+      <div style="margin-bottom:14px;">
+        <div style="font-size:11px;font-weight:800;color:var(--boards-accent);text-transform:uppercase;margin-bottom:6px;">📅 ${dateKey}</div>
+        <div style="display:flex;flex-direction:column;gap:6px;">
+          ${groups[dateKey].map(task => `
+            <div style="background:var(--surface-elevated);border:1px solid var(--border-subtle);border-radius:8px;padding:8px 10px;font-size:12px;display:flex;align-items:center;gap:6px;">
+              <span style="color:var(--success);font-weight:900;">✓</span>
+              <span class="tag ${task.stream === '12th' ? 'tag-boards' : task.stream === 'cafc' ? 'tag-ca' : 'tag-cseet'}">${task.stream}</span>
+              <span style="flex:1;">${task.text}</span>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  });
+
+  container.innerHTML = html;
+}
+
+/* =========================================================================
+   TARGETS ENGINE
    ========================================================================= */
 let currentTargetMode = 'portion';
 
@@ -1621,13 +1967,13 @@ function setTargetCreationMode(mode) {
 
 function populatePickSubjects() {
   const stream = document.getElementById("pickStream").value;
-  const subs = SYLLABUS_DEFAULT[stream];
+  const subs = SYLLABUS_DEFAULT[stream] || [];
   const select = document.getElementById("pickSubject");
   select.innerHTML = subs.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
-  populatePickItems();
+  populatePickChapters();
 }
 
-function populatePickItems() {
+function populatePickChapters() {
   const stream = document.getElementById("pickStream").value;
   const subId = document.getElementById("pickSubject").value;
   const subject = SYLLABUS_DEFAULT[stream].find(s => s.id === subId);
@@ -1689,7 +2035,7 @@ function submitTarget() {
       const uIdx = Number(document.getElementById("pickUnit").value);
       const chpObj = subObj.chapters.find(c => c.id === chpId);
       text = `${chpObj.name.split(':')[0]}: ${chpObj.units[uIdx]}`;
-      stream = 'cafc';
+      stream = streamKey === 'cafc' ? 'cafc' : 'cseet';
     }
   } else {
     text = document.getElementById("tgtCustomText").value.trim();
@@ -1702,7 +2048,8 @@ function submitTarget() {
     text,
     scope,
     stream,
-    done: false
+    done: false,
+    dateAdded: new Date().toISOString().slice(0, 10)
   });
 
   saveState();
@@ -1722,7 +2069,7 @@ function renderTargetsHTML(scope) {
         ${t.done ? '✓' : ''}
       </div>
       <div class="target-label ${t.done ? 'completed' : ''}" onclick="toggleTarget(${t.id})">
-        <span class="tag ${t.stream === '12th' ? 'tag-boards' : t.stream === 'cafc' ? 'tag-ca' : ''}" style="margin-right:4px;">${t.stream}</span>
+        <span class="tag ${t.stream === '12th' ? 'tag-boards' : t.stream === 'cafc' ? 'tag-ca' : t.stream === 'cseet' ? 'tag-cseet' : ''}" style="margin-right:4px;">${t.stream}</span>
         ${t.text}
       </div>
       <button class="target-delete" onclick="deleteTarget(${t.id})">✕</button>
@@ -1734,6 +2081,14 @@ function toggleTarget(id) {
   const target = STATE.targets.find(t => t.id === id);
   if (target) {
     target.done = !target.done;
+    if (target.done && target.scope === 'daily') {
+      STATE.completedLog.unshift({
+        id: Date.now(),
+        text: target.text,
+        stream: target.stream,
+        dateCompleted: new Date().toISOString().slice(0, 10)
+      });
+    }
     saveState();
     if (currentNav === 'overview') renderOverviewPage();
   }
@@ -1746,7 +2101,7 @@ function deleteTarget(id) {
 }
 
 /* =========================================================================
-   TIMER IMPLEMENTATION (STOPWATCH & ADJUSTER)
+   OVERHAULED STOPWATCH & TIME ADJUSTMENT ENGINE
    ========================================================================= */
 let timerSeconds = 0;
 let timerInterval = null;
@@ -1768,33 +2123,63 @@ function toggleTimer() {
     timerInterval = setInterval(() => {
       timerSeconds++;
       STATE.studySeconds++;
-      const el = document.getElementById("stopwatchDisplay");
-      if (el) el.innerText = formatTime(timerSeconds);
+      updateLiveStopwatchDisplay();
       if (timerSeconds % 60 === 0) saveState();
     }, 1000);
   }
   const btn = document.getElementById("btnTimerToggle");
-  if (btn) btn.innerText = isTimerRunning ? 'Pause Session' : 'Start Focus';
+  if (btn) btn.innerText = isTimerRunning ? 'Stop Focus' : 'Start Focus';
 }
 
 function resetTimer() {
   clearInterval(timerInterval);
   isTimerRunning = false;
   timerSeconds = 0;
-  const el = document.getElementById("stopwatchDisplay");
-  if (el) el.innerText = formatTime(0);
+  updateLiveStopwatchDisplay();
   const btn = document.getElementById("btnTimerToggle");
   if (btn) btn.innerText = 'Start Focus';
 }
 
-function applyTimeAdjustment() {
-  const val = Number(document.getElementById("adjustMinutesInput").value);
-  if (!isNaN(val) && val !== 0) {
-    STATE.studySeconds = Math.max(0, STATE.studySeconds + (val * 60));
-    saveState();
-    closeModal('adjustTimerModal');
-    if (currentNav === 'overview') renderOverviewPage();
-    if (currentNav === 'stats') renderStatsPage();
+function updateLiveStopwatchDisplay() {
+  const el = document.getElementById("stopwatchDisplay");
+  if (el) el.innerText = formatTime(timerSeconds);
+}
+
+function adjustStudyTime(deltaMinutes) {
+  const deltaSecs = deltaMinutes * 60;
+  timerSeconds = Math.max(0, timerSeconds + deltaSecs);
+  STATE.studySeconds = Math.max(0, STATE.studySeconds + deltaSecs);
+  saveState();
+
+  updateLiveStopwatchDisplay();
+  if (currentNav === 'overview') renderOverviewPage();
+  if (currentNav === 'stats') renderStatsPage();
+}
+
+function quickAdjustMinutes(mins) {
+  adjustStudyTime(mins);
+  const feedback = document.getElementById("timerFeedbackMsg");
+  if (feedback) {
+    feedback.innerText = `${mins > 0 ? 'Added +' : 'Subtracted '}${mins} min successfully!`;
+    setTimeout(() => { if (feedback) feedback.innerText = ""; }, 2500);
+  }
+}
+
+function applyCustomTime(multiplier) {
+  const input = document.getElementById("customMinutesInput");
+  const val = Number(input.value);
+  if (!val || val <= 0 || isNaN(val)) {
+    alert("Please enter a valid number of minutes.");
+    return;
+  }
+  const minutes = val * multiplier;
+  adjustStudyTime(minutes);
+  input.value = "";
+  
+  const feedback = document.getElementById("timerFeedbackMsg");
+  if (feedback) {
+    feedback.innerText = `${minutes > 0 ? 'Added +' : 'Subtracted '}${Math.abs(minutes)} min successfully!`;
+    setTimeout(() => { if (feedback) feedback.innerText = ""; }, 2500);
   }
 }
 
@@ -1804,8 +2189,10 @@ function applyTimeAdjustment() {
 function saveExamDates() {
   const b = document.getElementById("cfgBoardsDate").value;
   const c = document.getElementById("cfgCaDate").value;
+  const cs = document.getElementById("cfgCseetDate").value;
   if (b) STATE.examDates.boards = b;
   if (c) STATE.examDates.ca = c;
+  if (cs) STATE.examDates.cseet = cs;
   saveState();
   closeModal('datesModal');
   if (currentNav === 'overview') renderOverviewPage();
@@ -1818,6 +2205,13 @@ function openModal(id) {
   if (id === 'datesModal') {
     document.getElementById("cfgBoardsDate").value = STATE.examDates.boards;
     document.getElementById("cfgCaDate").value = STATE.examDates.ca;
+    document.getElementById("cfgCseetDate").value = STATE.examDates.cseet;
+  }
+  if (id === 'testModal') {
+    populateTestSubjects();
+  }
+  if (id === 'logModal') {
+    renderCompletedArchiveLog();
   }
   document.getElementById(id).classList.add("active");
 }
@@ -1832,7 +2226,7 @@ function exportJSONBackup() {
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
-  a.download = `StudyPlannerPro_Backup_${new Date().toISOString().slice(0, 10)}.json`;
+  a.download = `studyplanner_backup_${new Date().toISOString().slice(0, 10)}.json`;
   a.click();
 }
 
@@ -1844,6 +2238,7 @@ function importJSONBackup() {
     STATE = { ...STATE, ...parsed };
     saveState();
     closeModal('syncModal');
+    updateUserDisplay();
     switchNav('overview');
     alert("Data restored successfully!");
   } catch (e) {
@@ -1857,7 +2252,7 @@ function downloadSelfHTML() {
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
-  a.download = "StudyPlannerPro_App.html";
+  a.download = "studyplanner_by_gandhi.html";
   a.click();
 }
 
