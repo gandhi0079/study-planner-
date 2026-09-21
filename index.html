@@ -2,19 +2,15 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
 <head>
-  <!-- PWA Settings -->
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0b0f19">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
-<meta name="apple-mobile-web-app-capable" content="yes"/>
-<meta name="mobile-web-app-capable" content="yes"/>
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
-<meta name="apple-mobile-web-app-title" content="studyplanner"/>
-<meta name="theme-color" content="#07090e"/>
+<meta name="apple-mobile-web-app-title" content="studyplanner">
+<link rel="apple-touch-icon" href="icon.png">
 <title>studyplanner — by gandhi</title>
 <style>
 :root{
@@ -2304,7 +2300,8 @@ async function boot() {
 
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
 else boot();
-</script><!-- Service Worker Registration -->
+</script>
+  <!-- Service Worker Registration -->
 <script>
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
