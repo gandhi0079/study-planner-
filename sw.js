@@ -1,4 +1,4 @@
-const CACHE_NAME = 'studyplanner-v2';
+const CACHE_NAME = 'studyplanner-cache-v3';
 
 self.addEventListener('install', (event) => {
   self.skipWaiting();
