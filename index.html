@@ -3,7 +3,6 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
-  <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#090d16">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -294,31 +293,6 @@
     .form-input.with-icon { padding-left: 36px; }
     .form-input:focus { border-color: var(--brand-blue); }
 
-    .chip-row {
-      display: flex;
-      gap: 6px;
-      overflow-x: auto;
-      padding-bottom: 4px;
-      margin-bottom: 14px;
-      scrollbar-width: none;
-    }
-    .chip-row::-webkit-scrollbar { display: none; }
-    .chip {
-      background: var(--surface-elevated);
-      border: 1px solid var(--surface-border);
-      color: var(--text-muted);
-      border-radius: 20px;
-      padding: 6px 14px;
-      font-size: 11px;
-      font-weight: 700;
-      white-space: nowrap;
-    }
-    .chip.active {
-      background: #fff;
-      color: #000;
-      border-color: #fff;
-    }
-
     /* SYLLABUS SUBJECT CARDS */
     .portion-item-card {
       background: var(--surface);
@@ -368,7 +342,6 @@
       margin-bottom: 6px;
     }
     .unit-name-txt { font-size: 12.5px; font-weight: 600; color: #fff; line-height: 1.35; flex: 1; }
-    .unit-sub-txt { font-size: 10.5px; color: var(--text-dim); margin-top: 2px; }
 
     /* TICK STRIPS */
     .tick-strip { display: flex; gap: 4px; align-items: center; }
@@ -415,7 +388,7 @@
       border: 1px solid var(--surface);
     }
 
-    /* FOCUS TIMER WIDGET (Image Inspired) */
+    /* FOCUS TIMER WIDGET */
     .timer-center-wrap {
       display: flex;
       flex-direction: column;
@@ -534,7 +507,6 @@
     .btn-full { width: 100%; }
     .btn-brand { background: var(--brand-blue); color: #fff; }
     .btn-dark { background: var(--surface-elevated); border: 1px solid var(--surface-border); color: var(--text-muted); }
-    .btn-danger { background: rgba(244, 63, 94, 0.14); color: var(--danger); border: 1px solid rgba(244, 63, 94, 0.3); }
 
     /* MODALS */
     .modal-backdrop {
@@ -594,7 +566,7 @@
     .notes-media-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px; }
     .media-card { position: relative; border-radius: 8px; overflow: hidden; aspect-ratio: 1; background: var(--surface-elevated); }
     .media-card img { width: 100%; height: 100%; object-fit: cover; }
-    .media-del { position: absolute; top: 3px; right: 3px; background: rgba(0,0,0,0.7); border: none; border-radius: 50%; color: var(--danger); width: 22px; height: 22px; }
+    .media-del { position: absolute; top: 3px; right: 3px; background: rgba(0,0,0,0.7); border: none; border-radius: 50%; color: var(--danger); width: 22px; height: 22px; cursor: pointer; }
   </style>
 </head>
 <body>
@@ -619,7 +591,7 @@
   <main id="tabTests" class="page" style="display:none"></main>
   <main id="tabStats" class="page" style="display:none"></main>
 
-  <!-- BOTTOM BAR NAVIGATION (Matches Prototype) -->
+  <!-- BOTTOM BAR NAVIGATION -->
   <nav class="bottom-nav">
     <button class="nav-btn active" id="navBtn-overview" onclick="switchNav('overview')">
       <svg viewBox="0 0 24 24"><path d="M3 12l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>
@@ -789,9 +761,6 @@
   <div id="toastWrap"></div>
 
   <script>
-    /* =========================================================================
-       COMBINED DATASET: 12TH MATHS 1 & 2 NOW UNIFIED UNDER ONE SUBJECT
-       ========================================================================= */
     const RAW = {
       boards_12th: [
         ["b_bk", "Book-Keeping & Accountancy",
@@ -995,9 +964,6 @@
     const localDate = d => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
     const todayStr = () => localDate(new Date());
 
-    /* =========================================================================
-       INDEX & ENGINE
-       ========================================================================= */
     const INDEX = [];
     for (const s of STREAMS) {
       (SYLLABUS[s.key] || []).forEach(sub => {
@@ -1017,7 +983,7 @@
       userName: 'Krishil',
       examDates: { boards: '2027-02-15', ca: '2027-06-20', cseet: '2026-11-10' },
       ticks: {}, tickMeta: {},
-      topicNotes: {}, mediaCounts: {},
+      topicNotes: {}, mediaCounts: {}, topicMedia: {},
       targets: [
         { id: '1', text: 'Mathematics: Differentiation Exercise', stream: '12th', done: true, time: '2h 00m' },
         { id: '2', text: 'Book-Keeping: Bills of Exchange', stream: '12th', done: false, time: '1h 30m' },
@@ -1030,14 +996,21 @@
     };
 
     function loadState() {
-      const saved = JSON.parse(localStorage.getItem('STUDY_PLANNER_PRO_MASTER') || 'null');
-      if (saved) STATE = Object.assign(STATE, saved);
+      try {
+        const saved = JSON.parse(localStorage.getItem('STUDY_PLANNER_PRO_MASTER') || 'null');
+        if (saved) STATE = Object.assign(STATE, saved);
+      } catch(e) {
+        console.error("Failed to load saved state:", e);
+      }
     }
-    function save() { localStorage.setItem('STUDY_PLANNER_PRO_MASTER', JSON.stringify(STATE)); }
+    function save() { 
+      try {
+        localStorage.setItem('STUDY_PLANNER_PRO_MASTER', JSON.stringify(STATE));
+      } catch(e) {
+        console.error("Failed to save state:", e);
+      }
+    }
 
-    /* =========================================================================
-       AUDIO & ROUTING
-       ========================================================================= */
     function playChime() {
       try {
         const ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -1054,7 +1027,7 @@
 
     let currentNav = 'overview';
     let portionStream = 'boards_12th';
-    let portionFilter = 'all';
+    let filterQuery = '';
 
     function switchNav(nav) {
       currentNav = nav;
@@ -1070,7 +1043,8 @@
     }
 
     function render() {
-      $('headerUserName').textContent = STATE.userName || 'Student';
+      const headerName = $('headerUserName');
+      if (headerName) headerName.textContent = STATE.userName || 'Student';
       if (currentNav === 'overview') renderOverview();
       if (currentNav === 'portions') renderPortions();
       if (currentNav === 'backlog') renderBacklog();
@@ -1078,9 +1052,6 @@
       if (currentNav === 'stats') renderStats();
     }
 
-    /* =========================================================================
-       VIEW 1: TODAY OVERVIEW (MATCHING IMAGE SCREEN 2)
-       ========================================================================= */
     function renderOverview() {
       const todayTotal = todayStudySeconds();
       const goalSec = (STATE.goalHours || 4) * 3600;
@@ -1115,7 +1086,6 @@
           </div>
         </div>
 
-        <!-- COUNTDOWNS -->
         <div class="countdown-grid">
           <div class="cd-card active-next" onclick="openModal('datesModal')">
             <div class="cd-days" style="color:var(--boards-accent)">${getDaysTo(STATE.examDates.boards)}</div>
@@ -1134,7 +1104,6 @@
           </div>
         </div>
 
-        <!-- FOCUS TIMER MODULE -->
         <div class="app-card">
           <div class="card-header">
             <span class="card-title">Focus Timer</span>
@@ -1162,7 +1131,6 @@
           </div>
         </div>
 
-        <!-- SCHEDULE -->
         <div class="app-card">
           <div class="card-header">
             <span class="card-title">Today's Schedule</span>
@@ -1183,9 +1151,6 @@
       $('tabOverview').innerHTML = h;
     }
 
-    /* =========================================================================
-       VIEW 2: PORTIONS (MATCHING IMAGE SCREEN 3)
-       ========================================================================= */
     const SUB_ICONS = {
       b_bk: { icon: '📒', bg: 'rgba(56,189,248,0.15)', color: '#38bdf8' },
       b_maths_combined: { icon: '📐', bg: 'rgba(59,130,246,0.2)', color: '#60a5fa' },
@@ -1207,11 +1172,37 @@
 
         <div class="search-input-wrap">
           <span class="search-icon">🔍</span>
-          <input type="search" class="form-input with-icon" placeholder="Search portions..." oninput="onFilterSearch(this.value)"/>
+          <input type="search" class="form-input with-icon" value="${esc(filterQuery)}" placeholder="Search portions..." oninput="onFilterSearch(this.value)"/>
         </div>
       `;
 
-      if (selectedSubjectForDetail) {
+      if (filterQuery.trim()) {
+        const query = filterQuery.toLowerCase();
+        const matches = INDEX.filter(it => it.stream === portionStream && (it.name.toLowerCase().includes(query) || it.subName.toLowerCase().includes(query)));
+        h += `<div>
+          <div style="font-size:12px;color:var(--text-dim);margin-bottom:10px">${matches.length} search results</div>
+          ${matches.map(it => {
+            const st = STATE.ticks[it.key] || 0;
+            const hasNotes = !!(STATE.topicNotes[it.key] || STATE.mediaCounts[it.key]);
+            return `
+              <div class="item-unit-row">
+                <div class="unit-name-txt">
+                  <div>${esc(it.name)}</div>
+                  <div style="font-size:10px;color:var(--text-dim)">${esc(it.subName)}</div>
+                </div>
+                <div style="display:flex;align-items:center;gap:6px">
+                  <button class="action-icon-btn" onclick="openNotes('${it.key}')">📷${hasNotes ? '<span class="badge-dot"></span>' : ''}</button>
+                  <div class="tick-strip">
+                    ${[1,2,3,4].map(num => `
+                      <div class="tick-box ${st >= num ? 'done-' + num : ''}" onclick="setStage('${it.key}', ${num})">${num}</div>
+                    `).join('')}
+                  </div>
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>`;
+      } else if (selectedSubjectForDetail) {
         h += renderSubjectDetailHTML(selectedSubjectForDetail);
       } else {
         const subs = SYLLABUS[portionStream] || [];
@@ -1249,6 +1240,11 @@
         h += `</div>`;
       }
       $('tabPortions').innerHTML = h;
+    }
+
+    function onFilterSearch(val) {
+      filterQuery = val;
+      renderPortions();
     }
 
     function openSubjectDetail(subId) {
@@ -1290,9 +1286,6 @@
       `;
     }
 
-    /* =========================================================================
-       VIEW 3: BACKLOG / REVISION
-       ========================================================================= */
     function renderBacklog() {
       let h = `
         <div class="app-card">
@@ -1337,9 +1330,6 @@
       save(); renderBacklog();
     }
 
-    /* =========================================================================
-       VIEW 4: TESTS
-       ========================================================================= */
     function renderTests() {
       let h = `
         <div class="card-header">
@@ -1369,9 +1359,6 @@
     }
     function deleteTest(i) { STATE.tests.splice(i, 1); save(); renderTests(); }
 
-    /* =========================================================================
-       VIEW 5: STATS & ANALYTICS (MATCHING IMAGE SCREEN 6)
-       ========================================================================= */
     function renderStats() {
       const todayTotal = todayStudySeconds();
       const hToday = (todayTotal / 3600).toFixed(1);
@@ -1420,10 +1407,6 @@
       $('tabStats').innerHTML = h;
     }
 
-    /* =========================================================================
-       TIMER CONTROLLER
-       ========================================================================= */
-    let timerInterval = null;
     function isTimerRunning() { return !!STATE.timer.since; }
     function getTimerSeconds() {
       const t = STATE.timer;
@@ -1476,9 +1459,6 @@
       return (Math.round(h * 10) / 10) + 'h';
     }
 
-    /* =========================================================================
-       HELPERS & MODALS
-       ========================================================================= */
     function setPortionStream(s) { portionStream = s; selectedSubjectForDetail = null; render(); }
     function getDaysTo(dStr) {
       if (!dStr) return '—';
@@ -1506,7 +1486,8 @@
       const it = INDEX_BY_KEY[key];
       $('notesModalTitle').textContent = it ? it.name : 'Notes';
       $('notesModalSub').textContent = it ? it.subName : '';
-      $('topicNoteText').value = STATE.topicNotes[key] \vert{}\vert{} '';$('mediaCount').textContent = STATE.mediaCounts[key] || 0;
+      $('topicNoteText').value = STATE.topicNotes[key] \vert{}\vert{} '';$('mediaCount').textContent = (STATE.topicMedia && STATE.topicMedia[key] ? STATE.topicMedia[key].length : 0);
+      renderTopicMedia();
       openModal('notesModal');
     }
     function saveTopicNotes() {
@@ -1515,6 +1496,62 @@
       if (val) STATE.topicNotes[activeNotesKey] = val;
       else delete STATE.topicNotes[activeNotesKey];
       save(); closeModal('notesModal'); render();
+    }
+
+    function handleImagePick(input) {
+      if (!activeNotesKey || !input.files) return;
+      if (!STATE.topicMedia) STATE.topicMedia = {};
+      if (!STATE.topicMedia[activeNotesKey]) STATE.topicMedia[activeNotesKey] = [];
+
+      Array.from(input.files).forEach(file => {
+        const reader = new FileReader();
+        reader.onload = e => {
+          STATE.topicMedia[activeNotesKey].push(e.target.result);
+          STATE.mediaCounts[activeNotesKey] = STATE.topicMedia[activeNotesKey].length;
+          $('mediaCount').textContent = STATE.topicMedia[activeNotesKey].length;
+          renderTopicMedia();
+          save();
+        };
+        reader.readAsDataURL(file);
+      });
+      input.value = '';
+    }
+
+    function renderTopicMedia() {
+      const container = $('notesMediaContainer');
+      if (!container || !activeNotesKey) return;
+      const list = (STATE.topicMedia && STATE.topicMedia[activeNotesKey]) || [];
+      container.innerHTML = list.map((src, idx) => `
+        <div class="media-card">
+          <img src="${src}"/>
+          <button class="media-del" onclick="removeTopicMedia(${idx})">✕</button>
+        </div>
+      `).join('');
+    }
+
+    function removeTopicMedia(idx) {
+      if (!activeNotesKey || !STATE.topicMedia[activeNotesKey]) return;
+      STATE.topicMedia[activeNotesKey].splice(idx, 1);
+      STATE.mediaCounts[activeNotesKey] = STATE.topicMedia[activeNotesKey].length;
+      $('mediaCount').textContent = STATE.topicMedia[activeNotesKey].length;
+      renderTopicMedia();
+      save();
+    }
+
+    function applySettingName(val) {
+      STATE.userName = val.trim() || 'Student';
+      save(); render();
+    }
+    function applyGoal(val) {
+      STATE.goalHours = Number(val) || 4;
+      save(); render();
+    }
+    function saveExamDates() {
+      STATE.examDates.boards = $('cfgBoardsDate').value || STATE.examDates.boards;
+      STATE.examDates.ca = $('cfgCaDate').value || STATE.examDates.ca;
+      STATE.examDates.cseet = $('cfgCseetDate').value || STATE.examDates.cseet;
+      save(); closeModal('datesModal'); render();
+      toast('Exam dates saved');
     }
 
     function openTargetModal() {
@@ -1586,8 +1623,25 @@
       toast('Score saved');
     }
 
-    function openModal(id) { $(id).classList.add('active'); }
-    function closeModal(id) { $(id).classList.remove('active'); }
+    function openModal(id) { 
+      const modal = $(id);
+      if (!modal) return;
+      if (id === 'settingsModal') {
+        $('setName').value = STATE.userName \vert{}\vert{} '';$('setGoal').value = STATE.goalHours || 4;
+      }
+      if (id === 'datesModal') {
+        $('cfgBoardsDate').value = STATE.examDates.boards || '';
+        $('cfgCaDate').value = STATE.examDates.ca \vert{}\vert{} '';$('cfgCseetDate').value = STATE.examDates.cseet || '';
+      }
+      if (id === 'testModal') {
+        populateTestSubjects();
+      }
+      modal.classList.add('active'); 
+    }
+    function closeModal(id) { 
+      const modal = $(id);
+      if (modal) modal.classList.remove('active'); 
+    }
     function toast(m) {
       const w = $('toastWrap');
       const el = document.createElement('div');
@@ -1614,7 +1668,6 @@
       r.readAsText(file);
     }
 
-    /* LOOP */
     setInterval(() => {
       if (isTimerRunning()) {
         const cd = $('clockDigits');
